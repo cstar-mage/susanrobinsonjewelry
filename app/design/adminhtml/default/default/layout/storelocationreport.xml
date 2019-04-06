@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <storelocationreport_adminhtml_storelocationreport_index>
+        <reference name="content">
+            <block type="storelocationreport/adminhtml_storelocationreport" name="storelocationreport" />
+        </reference>
+    </storelocationreport_adminhtml_storelocationreport_index>
+</layout>

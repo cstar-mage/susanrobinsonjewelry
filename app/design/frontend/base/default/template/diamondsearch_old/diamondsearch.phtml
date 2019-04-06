@@ -1,0 +1,1661 @@
+<script>
+function setCookies(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+} 
+
+function getCookie(cname) 
+{
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+    }
+    return "";
+} 
+
+ 
+
+var delete_cookie = function(name) {
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+};
+
+
+		var position_avilability='<?php echo Mage::getStoreConfig("diamondsearch/general_settings/atribute_position_avilability") ?>';
+		//alert(position_avilability);
+</script>
+
+
+
+<?php
+$attribute_position = unserialize(Mage::getStoreConfig("diamondsearch/attribute_position"));
+//echo "<pre>";print_r($attribute_position);echo "</pre>";
+foreach($attribute_position as $attrPos):
+
+	//print_r($attrPos);	
+
+$details[$attrPos[sortorder]][attrcode] = $attrPos['DetailsCode'];
+	$details[$attrPos[sortorder]][label] = $attrPos['Label'];
+	$details[$attrPos[sortorder]][forjs] = $attrPos['JsCode'];
+	/*$jsAttr.='
+var '.$attrPos[sortorder].' = { label: "'.$attrPos[label].'", attrcode: "'.$attrPos['attrcode'].'" }';	
+	$jsSort.=$attrPos[sortorder].', ';*/
+endforeach;
+ksort($details);
+//echo "<pre>";print_r($details);echo "</pre>";
+?>
+<script type="text/javascript">
+var attribute_position = <?php echo json_encode( $details ) ?>;
+/*jQuery(document).ready(function(){
+	 jQuery.each(attribute_position, function(index, element) {
+		console.log("attrcode : " + element.attrcode + "  =>   label : " + element.label)
+     });
+});*/
+
+</script>
+<?php
+function sortByOrder($a, $b) {
+    return $a['sortorder'] - $b['sortorder'];
+}
+//get General Configs
+$com_req_label = "Compare";
+if(Mage::getStoreConfig("diamondsearch/general_settings/compare_request"))
+	$com_req_label = "Request";
+$show_details_block = 0;
+if(Mage::getStoreConfig("diamondsearch/general_settings/showblock_detail"))
+	$show_details_block = 1;
+
+//is call for price ??
+$cfp_data = Mage::helper("diamondsearch")->getCallForPriceData();
+$is_cfp = $cfp_data["is_cfp"];
+$cfp_msg = $cfp_data["cfp_msg"];
+
+//echo $is_cfp." : ".$cfp_msg;
+//get General Configs ENDS
+
+//get Shape Configs
+$shapeConfig = unserialize(Mage::getStoreConfig("diamondsearch/shape_settings/shape_available"));
+//FOR PHP 5.3 usort($shapeConfig, function($a, $b) {return $a['sortorder'] - $b['sortorder'];});
+usort($shapeConfig, 'sortByOrder');
+$shapesLabelArray = array();
+$shapesArray = array();
+foreach ($shapeConfig as $_item):
+	 $shapesLabelArray[] = $_item["label"];
+	 $shapesimageArray[] = $_item["shapeimage"];
+	 $shapesArray[] = array("label" => $_item["label"], "sortorder" => $_item["sortorder"]);
+endforeach;
+
+
+
+//get Shape Configs ENDS
+
+//get Special Shape Configs
+
+$specialshapeConfig = unserialize(Mage::getStoreConfig("diamondsearch/shape_settings/specialshape_available"));
+usort($specialshapeConfig, 'sortByOrder');
+$specialshapesLabelArray = array();
+$specialshapesArray = array();
+foreach ($specialshapeConfig as $_item):
+	$specialshapesLabelArray[] = $_item["label"];
+	$specialshapesArray[] = array("label" => $_item["label"], "sortorder" => $_item["sortorder"]);
+endforeach;
+//get Special Shape Configs ENDS
+
+
+
+//echo "<pre>";
+//print_r($shapesimageArray);
+//get Shape Configs ENDS
+
+//get Slider Configs
+//color slider
+$colorSliderConfig = unserialize(Mage::getStoreConfig("diamondsearch/slider_settings/color_slider"));
+usort($colorSliderConfig, 'sortByOrder');
+$colorsArray = array();
+foreach ($colorSliderConfig as $_item):
+	 $colorsArray[] = $_item["label"];
+endforeach;
+//fancycolor slider
+$fancycolorSliderConfig = unserialize(Mage::getStoreConfig("diamondsearch/slider_settings/fancycolor_slider"));
+usort($fancycolorSliderConfig, 'sortByOrder');
+$fancycolorsArray = array();
+foreach ($fancycolorSliderConfig as $_item):
+	 $fancycolorsArray[] = $_item["label"];
+endforeach;
+
+//clarity slider
+$claritySliderConfig = unserialize(Mage::getStoreConfig("diamondsearch/slider_settings/clarity_slider"));
+usort($claritySliderConfig, 'sortByOrder');
+$claritiesArray = array();
+foreach ($claritySliderConfig as $_item):
+	 $claritiesArray[] = $_item["label"];
+endforeach;
+//cut slider
+$cutSliderConfig = unserialize(Mage::getStoreConfig("diamondsearch/slider_settings/cut_slider"));
+usort($cutSliderConfig, 'sortByOrder');
+$cutsArray = array();
+foreach ($cutSliderConfig as $_item):
+	 $cutsArray[] = $_item["label"];
+endforeach;
+//fluorescence slider
+$fluorescenceSliderConfig = unserialize(Mage::getStoreConfig("diamondsearch/slider_settings/fluorescence_slider"));
+usort($fluorescenceSliderConfig, 'sortByOrder');
+$fluorescencesArray = array();
+foreach ($fluorescenceSliderConfig as $_item):
+	 $fluorescencesArray[] = $_item["label"];
+endforeach;
+//certificate slider
+$certificateSliderConfig = unserialize(Mage::getStoreConfig("diamondsearch/slider_settings/certificate_slider"));
+usort($certificateSliderConfig, 'sortByOrder');
+$certificatesArray = array();
+foreach ($certificateSliderConfig as $_item):
+	 $certificatesArray[] = $_item["label"];
+endforeach;
+//get Slider Configs ENDS
+?>
+<?php //FROM /search_diamonds.js ?>
+<script type="text/javascript">
+var DIAMOND_SLIDER_ATTRIBUTES = {
+  "cuts": <?php echo json_encode($cutsArray) ?>,
+  "colors": <?php echo json_encode($colorsArray) ?>,
+  "fancycolors": <?php echo json_encode($fancycolorsArray) ?>,
+  "clarities": <?php echo json_encode($claritiesArray) ?>,
+  "fluorescences": <?php echo json_encode($fluorescencesArray) ?>
+};
+
+var CACHE = {
+  'waiting_response': false,
+  'request_params': null
+};
+var host_url = "<?php echo Mage::getBaseUrl (Mage_Core_Model_Store::URL_TYPE_WEB); ?>";
+var lastAjax = null;
+var end_scroll_top = false;
+</script>
+<?php //FROM /new_tab_diamond_result_table.js ?>
+<script type="text/javascript">
+var dtl = {};
+dtl.symbol = '$';
+dtl.currency = 1;
+dtl.diamond_category = 'CONFLICT FREE DIAMONDS';
+dtl.order_by = '';
+dtl.order_method = '';
+dtl.order_by_list = ['stock_number', 'shape', 'carat', 'color', 'fancycolor', 'clarity', 'fluorescence', 'cut', 'collection', 'l:w', 'report', 'inhouse', 'price', 'percent_rap', 'availability', 'dimensions', 'depth', 'tabl'];
+
+dtl.on_page = '';
+dtl.view_link = '';
+dtl.search_path = '';
+dtl.last_fetch = 0;
+dtl.lastAjax = null;
+
+dtl.row = 0;
+dtl.recent_row = 0;
+dtl.cmp_row = 0;
+dtl.row_pointer = 0;
+dtl.data_size = 100;
+dtl.page_size = 20;
+dtl.total_count = 0;
+dtl.diamonds = [];
+dtl.similar = [];
+dtl.is_pair = false;
+dtl.viewparams = "";
+
+dtl.orders = {
+  //'shape': ['Round', 'Princess', 'Asscher', 'Cushion', 'Radiant', 'Emerald', 'Oval', 'Pear', 'Marquise', 'Heart'],
+  'shape': <?php echo json_encode($shapesLabelArray) ?>,
+  'color': <?php echo json_encode($colorsArray) ?>,
+  'fancycolor': <?php echo json_encode($fancycolorsArray) ?>,
+  'clarity': <?php echo json_encode($claritiesArray) ?>,
+  'fluorescence': <?php echo json_encode($fluorescencesArray) ?>,
+  'cut': <?php echo json_encode($cutsArray) ?>,
+  'report': <?php echo json_encode($certificatesArray) ?>
+};
+
+<?php
+echo "var com_req_label = '".$com_req_label."';";
+echo "var is_cfp = ".$is_cfp.";";
+echo "var cfp_msg = '".$cfp_msg."';";
+
+echo "var show_origin = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/show_origin"))
+	echo "show_origin = true;";
+echo "var show_rapper = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/show_rapper"))
+	echo "show_rapper = true;";
+?>
+// total 14 default
+// for 0 : 14 - 2 = 12
+<?php
+$fluor_index = 6;
+$lw_index = 7;
+
+$zero_width_indexes_0 = array($fluor_index,$lw_index);
+$zero_width_indexes_c = array($lw_index);
+$zero_width_indexes_lw = array($fluor_index);
+$zero_width_indexes_c_lw = array();
+$total_cols = 12;
+
+echo "var showcolumn_rapdiscount = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_rapdiscount"))
+{
+	$total_cols++;
+	echo "showcolumn_rapdiscount = true;";
+}
+echo "var showcolumn_availability = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_availability"))
+{
+	$total_cols++;
+	echo "showcolumn_availability = true;";
+}
+echo "var showcolumn_dimensions = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_dimensions"))
+{
+	$total_cols++;
+	echo "showcolumn_dimensions = true;";
+}
+echo "var showcolumn_depth = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_depth"))
+{
+	$total_cols++;
+	echo "showcolumn_depth = true;";
+}
+echo "var showcolumn_tabl = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_tabl"))
+{
+	$total_cols++;
+	echo "showcolumn_tabl = true;";
+}
+echo "var showcolumn_inhouse = false;";
+if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_inhouse"))
+{
+	$total_cols++;
+	echo "showcolumn_inhouse = true;";
+}
+
+$cnt_arr_0 = array();
+$cnt_arr_c = array();
+$cnt_arr_lw = array();
+$cnt_arr_c_lw = array();
+
+for($i=0;$i<$total_cols;$i++){
+	if(in_array($i, $zero_width_indexes_0)){ $cnt_arr_0[$i] = "0%"; }
+	else {$cnt_arr_0[$i] = (100/($total_cols - count($zero_width_indexes_0)))."%";}
+	
+	if(in_array($i, $zero_width_indexes_c)){ $cnt_arr_c[$i] = "0%"; }
+	else {$cnt_arr_c[$i] = (100/($total_cols - count($zero_width_indexes_c)))."%";}
+	
+	if(in_array($i, $zero_width_indexes_lw)){ $cnt_arr_lw[$i] = "0%"; }
+	else {$cnt_arr_lw[$i] = (100/($total_cols - count($zero_width_indexes_lw)))."%";}
+	
+	if(in_array($i, $zero_width_indexes_c_lw)){ $cnt_arr_c_lw[$i] = "0%"; }
+	else {$cnt_arr_c_lw[$i] = (100/($total_cols - count($zero_width_indexes_c_lw)))."%";}
+}
+?>
+dtl.header = '0';
+dtl.header_widths = {
+//SKU 	SHAPE 	CARAT 	COLOR 	CLARITY 	CUT 	FLUOR 	L:W 	REPORT 	PRICE 	RAP% 	AVAIL  	compare VIEW;
+	
+  '0': <?php echo json_encode($cnt_arr_0) ?>,
+  'c': <?php echo json_encode($cnt_arr_c) ?>,
+  'lw': <?php echo json_encode($cnt_arr_lw) ?>,
+  'c_lw': <?php echo json_encode($cnt_arr_c_lw) ?>
+  
+  /*'0': ['10%', '9%', '8%', '7%', '8%', '6%', '0%', '0%', '9%', '10%', '8%', '7%', '9%', '9%'],
+  'c': ['9%', '8%', '8%', '7%', '7%', '6%', '7%', '0%', '9%', '7%', '8%', '6%', '9%', '9%'],
+  'lw': ['9%', '8%', '8%', '7%', '7%', '6%', '0%', '6%', '9%', '7%', '9%', '6%', '9%', '9%'],
+  'c_lw': ['8%', '8%', '7%', '7%', '7%', '6%', '6%', '6%', '8%', '9%', '7%', '7%', '7%', '7%']*/
+};
+dtl.old_header_widths = {
+  '0': ['13%', '13%', '10%', '10%', '10%', '13%', '0%', '0%', '11%', '13%', '11%', '0%', '9%'],
+  'c': ['12%', '12%', '8%', '8%', '9%', '12%', '12%', '0%', '9%', '11%', '10%', '0%', '8%'],
+  'lw': ['12%', '12%', '9%', '9%', '10%', '12%', '0%', '7%', '10%', '12%', '10%', '0%', '8%'],
+  'c_lw': ['11%', '11%', '8%', '8%', '9%', '10%', '12%', '4%', '9%', '11%', '9%', '0%', '10%']
+};
+</script>
+<script type="text/javascript">
+	var dataLayer = dataLayer || [];
+    dataLayer.push({ "pageGroup" : "Listing pages" });
+    var content_group = '';
+</script>
+<link href="<?php echo $this->getSkinUrl("dsearch/css/global-mini.css") ?>" rel="stylesheet">
+<link href="<?php echo $this->getSkinUrl("dsearch/css/valentines-day2015.css") ?>" rel="stylesheet">
+<?php if(Mage::getStoreConfig("diamondsearch/general_settings/include_jquery")): ?>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.1.10.2.js") ?>"></script>
+<?php endif ?>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/global-mini.js") ?>"></script>
+<script type="text/javascript">
+	$j = jQuery.noConflict();
+	var pr_style_sheet = '<?php echo $this->getSkinUrl("dsearch/css/express.css") ?>';
+	var is_mobile = false;
+	var is_ipad = false;
+	var currency_symbol = '<?php echo Mage::app()->getLocale()->currency( $currency_code )->getSymbol(); ?>';
+	var canada_country = false;
+	var australia_country = false;
+	set_version_to_cookie('india', 'USD', 'False', 'False');
+</script>
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("dsearch/css/scrollbar.css") ?>" />
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("dsearch/css/jquery.nouislider.css") ?>" />
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("dsearch/css/bootstrap-select.css") ?>" />
+
+<!--/*style settings from admin*/-->
+<style type="text/css">
+/*SLIDER COLOR*/
+.noUi-horizontal .noUi-base{
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/slider_bgcolor").";" : "";
+?> <?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_shadow_color") ? "box-shadow: 0 5px 5px ".Mage::getStoreConfig("diamondsearch/design_settings/slider_shadow_color")." inset;" : "";
+?>
+}
+/*SLIDER unselected COLORs*/
+.ui-slider-left-cap, .ui-slider-right-cap {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_bgcolor").";" : "";
+?> <?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_shadow_color") ? "box-shadow: 0 0 3px ".Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_shadow_color")." inset;" : "";
+?>
+}
+
+/*COLOR SWITCH button text */
+.color_switcher{
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/colorswitch_button_textcolor") ? "color: ".Mage::getStoreConfig("diamondsearch/design_settings/colorswitch_button_textcolor")." !important;" : "";
+?>
+}
+/*COLOR SWITCH button bg */
+.color_switcher {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/colorswitch_button_color") ? "background-color: ".Mage::getStoreConfig("diamondsearch/design_settings/colorswitch_button_color").";" : "";
+?>
+}
+/*COLOR SWITCH button HOVERs bg */
+.color_switcher:hover {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/colorswitch_button_hover_color") ? "background-color: ".Mage::getStoreConfig("diamondsearch/design_settings/colorswitch_button_hover_color").";" : "";
+?>
+}
+
+/*ADVANCED SEARCH text color */
+.advanced-search .heading-wrapper .heading span, .advanced-search .search-check-lists a,.advanced-search .on-or-before .span-sno{
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/advanced_search_textcolor") ? "color:".Mage::getStoreConfig("diamondsearch/design_settings/advanced_search_textcolor").";" : "";
+?>
+}
+/*ADVANCED SEARCH bg*/
+.advanced-search {
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/advanced_search_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/advanced_search_bgcolor").";" : "";
+?>
+}
+/*SORT ARROWS style if light*/
+<?php echo (Mage::getStoreConfig("diamondsearch/design_settings/table_sort_arrow_style") == "light") ? ".icons-chevron-up{background-position: -82px -69px;}.icons-chevron-down{background-position: -96px -69px;}" : ""; ?>
+/*TABS text*/
+.ysr-tabs .nav-tabs > li.active > a > span{
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/tabs_textcolor") ? "color:".Mage::getStoreConfig("diamondsearch/design_settings/tabs_textcolor").";" : "";
+?>
+}
+/*TABS bg*/
+.ysr-tabs .nav-tabs > li.active > a {
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/tabs_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/tabs_bgcolor").";" : "";
+?>
+}
+/*TABLE HEADERS text */
+.search-results-outline .table-head span a{
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_header_textcolor") ? "color:".Mage::getStoreConfig("diamondsearch/design_settings/table_header_textcolor").";" : "";
+?>
+}
+/*TABLE HEADERS bg */
+.search-results-outline > thead > tr > th {
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_header_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/table_header_bgcolor").";" : "";
+?>
+}
+/*ODD row bg */
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_row_odd_bgcolor") ? "background-color:".Mage::getStoreConfig("diamondsearch/design_settings/table_row_odd_bgcolor").";" : "";
+?>
+}
+/*EVEN row bg */
+.search-result-table td {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_row_even_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/table_row_even_bgcolor").";" : "";
+?>
+}
+/*row HOVER bg */
+.table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > th {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_row_hover_bgcolor") ? "background-color:".Mage::getStoreConfig("diamondsearch/design_settings/table_row_hover_bgcolor").";" : "";
+?>
+}
+/*VIEW DIAMOND button text */
+#diamond_info_panel .btn-success{
+<?php echo Mage::getStoreConfig("diamondsearch/design_settings/view_button_textcolor") ? "color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_textcolor").";" : "";
+?>
+}
+/*VIEW DIAMOND button bg */
+.btn-success {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/view_button_color") ? "background-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_color")."; border-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_color").";" : "";
+?>
+}
+/*VIEW DIAMOND button HOVERs bg */
+.btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .open .dropdown-toggle.btn-success, .btn-secondary:hover {
+ <?php echo Mage::getStoreConfig("diamondsearch/design_settings/view_button_hover_color") ? "background-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_hover_color")."; border-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_hover_color").";" : "";
+?>
+}
+/* SETTING DYNAMIC Shapes */
+.product-shape li {
+<?php echo (!empty($shapesLabelArray)) ? "width: ".(100/count($shapesLabelArray))."%;" : ""; ?>
+<?php //echo (Mage::getStoreConfig("diamondsearch/shape_settings/shape_style")=="outline") ? "height:80px" : "";?>
+<?php echo "height:80px";?>
+}
+
+<?php if(Mage::getStoreConfig("diamondsearch/design_settings/shape_color")): ?>
+.product-shape li.active a {
+  background-color: <?php echo Mage::getStoreConfig("diamondsearch/design_settings/shape_color");?>;
+}
+<?php endif; ?>
+.product-shape li a {
+	<?php echo "width: 60px; height: 65px;" ?>
+}
+@media only screen and (max-width: 992px){ 
+	.product-shape li {	<?php echo (!empty($shapesLabelArray)) ? "width: 16.6667%" : ""; ?>	}
+}
+@media only screen and (max-width: 450px){ 
+	.product-shape li {	<?php echo (!empty($shapesLabelArray)) ? "width: 25%" : ""; ?>	}
+}
+
+
+
+
+<?php for($i=0;$i<count($shapesArray);$i++):
+
+	$imageurl=Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA).'dsearch'.DS.'shape' .DS.$shapesimageArray[$i];
+	$url = getimagesize($imageurl);
+	if($shapesimageArray[$i] && is_array($url)) 
+	{	
+		 
+		$resizeImage=Mage::helper('diamondsearch')->resizeImage($shapesimageArray[$i], 50, 65, 'dsearch/shape');	
+		echo ".product-shape .".strtolower( str_replace(' ','-', $shapesArray[$i]["label"]) )."-details a{
+		background-image: url('".$resizeImage."');
+		background-position: center center;
+		}";
+	  
+	}
+	else
+	{
+		
+		echo ".product-shape .".strtolower( str_replace(' ','-', $shapesArray[$i]["label"]) )."-details a{
+		background-image: url('".$this->getSkinUrl("dsearch/shape_style").DS.Mage::getStoreConfig("diamondsearch/shape_settings/shape_style")."_".strtolower( str_replace(' ','-', $shapesArray[$i]["label"]) ).".png');
+		background-position: center center;
+		}";
+	}	
+	endfor;
+?>
+
+/* Special Shape */
+
+<?php    
+
+
+		for($i=0;$i<count($specialshapesArray);$i++):
+			$htmlen=htmlentities($specialshapesArray[$i]["label"]);
+			$diam=strtolower(preg_replace("/&#?[a-z0-9]+;/i","",$htmlen));
+			$string = str_replace(' ', '-',$diam );
+			//echo $string; 
+			$images=$string.".jpg";
+			$resizeImages=Mage::helper('diamondsearch')->resizeImage($images, 85, 85, 'dsearch/spacialshaps');
+			echo ".product-specialshape .".$string."-details a{
+				background-image: url('".$resizeImages."');
+				background-position: center center;background-repeat: no-repeat; display: table;text-align: center;width: 100%;
+				}";
+
+	endfor;
+?>
+
+
+
+/* SETTING DYNAMIC SLIDERS STARTS */
+.color-slider-data li{
+<?php echo (!empty($colorsArray)) ? "width: ".(100/count($colorsArray))."%;" : "";
+?>
+}
+<?php for($i=1;$i<count($colorsArray);$i++): 
+ echo "#color_slider .ui-slider-scale li.fore".$i."{left:".(100/count($colorsArray))*$i."%}";
+endfor;
+?>
+.fancycolor-slider-data li{
+<?php echo (!empty($fancycolorsArray)) ? "width: ".(100/count($fancycolorsArray))."%;" : "";
+?>
+}
+<?php for($i=1;$i<count($fancycolorsArray);$i++): 
+ echo "#fancycolor_slider .ui-slider-scale li.fore".$i."{left:".(100/count($fancycolorsArray))*$i."%}";
+endfor;
+?>
+.clarity-slider-data li{
+<?php echo (!empty($claritiesArray)) ? "width: ".(100/count($claritiesArray))."%;" : "";
+?>
+}
+<?php for($i=1;$i<count($claritiesArray);$i++): 
+ echo "#clarity_slider .ui-slider-scale li.fore".$i."{left:".(100/count($claritiesArray))*$i."%}";
+endfor;
+?>
+.cut-slider-data li{
+<?php echo (!empty($cutsArray)) ? "width: ".(100/count($cutsArray))."%;" : "";
+?>
+}
+<?php for($i=1;$i<count($cutsArray);$i++): 
+ echo "#cut_slider .ui-slider-scale li.fore".$i."{left:".(100/count($cutsArray))*$i."%}";
+endfor;
+?>
+.fluorescence-slider-data li{
+<?php echo (!empty($fluorescencesArray)) ? "width: ".(100/count($fluorescencesArray))."%;" : "";
+?>
+}
+<?php for($i=1;$i<count($fluorescencesArray);$i++): 
+ echo "#fluorescence_slider .ui-slider-scale li.fore".$i."{left:".(100/count($fluorescencesArray))*$i."%}";
+endfor;
+?>
+
+/* SETTING DYNAMIC SLIDERS ENDS */
+</style>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.tinyscrollbar.min.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.nouislider.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/bootstrap-select.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/json2.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/search_diamond.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/new_tab_diamond_result_table.js") ?>"></script>
+<script type="text/javascript">
+var MIN_PRICE = '', MAX_PRICE = '', MIN_CARAT = '', MAX_CARAT = '';
+//var shape_ranges = {"Asscher": [1840, 102370, 0.54, 6.0], "Heart": [950, 552690, 0.31, 5.73], "Radiant": [990, 125520, 0.3, 7.02], "Marquise": [580, 126060, 0.26, 3.02], "Pear": [550, 178390, 0.25, 6.2], "Princess": [490, 259400, 0.25, 10.2], "Cushion": [780, 422570, 0.31, 10.18], "Emerald": [550, 431940, 0.28, 10.37], "Oval": [570, 226620, 0.3, 5.06], "Round": [610, 872890, 0.25, 14.08]};
+var shape_ranges = <?php echo Mage::helper("diamondsearch")->getShapeRangesJson(); ?>;
+var curr_symbol = '<?php echo Mage::app()->getLocale()->currency( $currency_code )->getSymbol(); ?>';
+var collection_params = [];
+var origin_params = [];
+var report_params = [];
+var view_link = "<?php echo $this->getUrl("diamondsearch/index/view")."id/" ?>";
+var search_path = "diamond-search";
+var stock_number_params =  ["all"];
+var _shapes = '';
+if (_shapes == "") {
+  _shapes = "All";
+}
+jQuery(document).ready(function() {
+    jQuery('.selectpicker').selectpicker();
+  if ( 'ontouchstart' in window ) {
+    jQuery('.product-shape li a').hover(function(){
+      jQuery(this).click();
+      this.stopPropagation();
+    }, function() {});
+  } else {
+    // Don't show popover for tablet.
+    jQuery('.collection-hint').popover();
+  }
+
+  var sp_str = reset_diamonds_search_params();
+  // var sp_str = jQuery.cookie('search_params'+jQuery.trim('$'));
+  var prev_curr = jQuery.cookie('search_curr');
+  var sp_dict = undefined;
+
+  if (sp_str) {
+    try {
+      sp_dict = jQuery.parseJSON(sp_str, true);
+    } catch(e) {
+      sp_dict = undefined;
+    }
+  }
+
+  if (sp_dict != undefined) {
+    MIN_PRICE = sp_dict.MIN_PRICE;
+    MAX_PRICE = sp_dict.MAX_PRICE;
+    MIN_CARAT = sp_dict.MIN_CARAT;
+    MAX_CARAT = sp_dict.MAX_CARAT;
+
+    if ('' === '' && sp_dict.shapes != undefined) {
+      _shapes = sp_dict.shapes;
+    }
+
+    sp_dict.special= getCookie('spacialnew');
+    if (origin_params.length == 0 && sp_dict.origins) {
+      var _t = '["'+sp_dict.origins+'"]';
+      origin_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+    }
+    if (collection_params.length == 0  && sp_dict.collections) {
+      var _t = '["'+sp_dict.collections+'"]';
+      collection_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+    }
+    if (report_params.length == 0  && sp_dict.reports) {
+      var _t = '["'+sp_dict.reports+'"]';
+      report_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+    }
+    if (sp_dict.stock_number) {
+      var _t = '["'+sp_dict.stock_number+'"]';
+      stock_number_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+    }
+    var ratio_min_value = 1.00, ratio_max_value = 2.75;
+    if (sp_dict.min_ratio != undefined) { ratio_min_value = sp_dict.min_ratio; }
+    if (sp_dict.max_ratio != undefined) { ratio_max_value = sp_dict.max_ratio; }
+		//switching color_sliders
+		if(sp_dict.is_fancy){
+			jQuery("#div_color").addClass("hidden");
+			jQuery("#div_fancycolor").removeClass("hidden");
+			jQuery(".color_switcher").removeClass("active_slider");
+			jQuery(".fancycolor.color_switcher").addClass("active_slider");
+		}
+		
+    init_search_panel(
+      _shapes,
+      sp_dict.cuts,
+      sp_dict.colors,
+      sp_dict.fancycolors,
+      sp_dict.clarities,
+			sp_dict.fluorescences,
+      sp_dict.min_carat,
+      sp_dict.max_carat,
+      sp_dict.min_price,
+      sp_dict.max_price,
+      ratio_min_value,
+      ratio_max_value,
+      collection_params,
+      origin_params,
+      report_params,
+      stock_number_params,
+      sp_dict.special
+    );
+    dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', sp_dict.row, sp_dict.order_by,
+      sp_dict.order_method, 100, view_link, search_path);
+  } else {
+	<?php $initialValues = Mage::helper("diamondsearch")->getInitSearchPanelDataJson(); ?>
+    init_search_panel(
+      _shapes,
+      "",
+      "",
+      "",
+      "",
+		"",
+      "<?php echo $initialValues["min_carat"];?>",
+      "<?php echo $initialValues["max_carat"];?>",
+      "<?php echo $initialValues["min_totalprice"];?>",
+      "<?php echo $initialValues["max_totalprice"];?>",
+      "0.00",
+      "0.00",
+      collection_params,
+      origin_params,
+      report_params,
+      stock_number_params
+    );
+
+    <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_inhouse")){ ?>
+		dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', 0, 'inhouse','desc', 100, view_link, search_path);
+	<?php } else { ?>
+		dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', 0, 'price','asc', 100, view_link, search_path);
+	<?php } ?>
+  }
+	
+  dtl.fetch_result();
+  init_status = setInterval(function() {
+
+    if (dtl.lastAjax && dtl.lastAjax.status !== undefined) {
+      fetch_recently_viewed_result();
+      init_comparson();
+      clearInterval(init_status);
+    }
+  }, 200);
+
+  jQuery('#tab_diamonds_search').click(function(){
+    if (dtl.total_count === 0 && is_similar_show == 'N'){
+      jQuery('#listContainer').addClass('hidden');
+      jQuery('.search-nothing-tips').removeClass('hidden');
+      jQuery('.search-nothing-tips').show();
+    }
+    else{
+      jQuery('.search-nothing-tips').addClass('hidden');
+      jQuery('#listContainer').removeClass('hidden');
+    }
+    jQuery('.scrollbar').css('visibility', 'hidden');
+    jQuery('#result-scrollbar').css('visibility','visible');
+    jQuery('#search_recently_header_table').css('display', 'none');
+    jQuery('#search_comparison_header_table').css('display', 'none');
+    jQuery('#search_result_header_table').css('display', '');
+    jQuery('#diamonds_recently_viewed_table').css('display','none');
+    jQuery('#diamonds_comparison_table').css('display','none');
+    jQuery('#diamonds_search_table').css('display','block');
+  });
+
+  jQuery('#tab_diamonds_recently_viewed').click(function(){
+    jQuery('.search-nothing-tips').addClass('hidden');
+    jQuery('#listContainer').removeClass('hidden');
+    jQuery('.scrollbar').css('visibility', 'hidden');
+    jQuery('#recent-scrollbar').css('visibility','visible');
+    jQuery('#search_recently_header_table').css('display', '');
+    jQuery('#search_comparison_header_table').css('display', 'none');
+    jQuery('#search_result_header_table').css('display', 'none');
+    jQuery('#diamonds_recently_viewed_table').css('display','block');
+    jQuery('#diamonds_comparison_table').css('display','none');
+    jQuery('#diamonds_search_table').css('display','none');
+  });
+
+  jQuery('#tab_diamonds_comparison').click(function(){
+    jQuery('.search-nothing-tips').addClass('hidden');
+    jQuery('#listContainer').removeClass('hidden');
+    jQuery('.scrollbar').css('visibility', 'hidden');
+    jQuery('#cmp-scrollbar').css('visibility','visible');
+    jQuery('#search_recently_header_table').css('display', 'none');
+    jQuery('#search_comparison_header_table').css('display', '');
+    jQuery('#search_result_header_table').css('display', 'none');
+    jQuery('#diamonds_recently_viewed_table').css('display','none');
+    jQuery('#diamonds_comparison_table').css('display','block');
+    jQuery('#diamonds_search_table').css('display','none');
+  });
+  jQuery("#recently_viewed_table").delegate("div","click", function(){save_compared(this);});
+  jQuery("#search_result_table").delegate("div","click", function(){save_compared(this);});
+  jQuery("#comparison_table").delegate("div","click", function(){save_compared(this);});
+
+  jQuery.cookie('cyo_shape', "", {path: '/'});
+});
+
+</script>
+
+<!-- Overlay section -->
+
+<div id="overlay" style="left:0;display:none; width:100%; height:100%; position: absolute; z-index: 2008; background-color:#82838E; FILTER: alpha(opacity=60); opacity: 0.6; moz-opacity: 0.6;"> 
+  <script type="text/javascript">
+    if (jQuery.browser.msie) {
+      document.write('<iframe height="100%" width="100%" style="FILTER: alpha(opacity=10); opacity: 0.1; moz-opacity: 0; z-index:2008;" frameborder="no" ></iframe>');
+    }
+    jQuery('#overlay').click(function(){
+      jQuery('.overPopup').hide();
+      jQuery('#overlay').removeClass('overPopup');
+    });
+  </script> 
+</div>
+<!-- End Overlay section --> 
+
+<!-- SITE BODY START -->
+<div class="container ds-container">
+  <?php if(Mage::getStoreConfig("diamondsearch/general_settings/header_text")): ?>
+      <?php echo Mage::getStoreConfig("diamondsearch/general_settings/header_text"); ?>
+  <?php endif; ?>
+  
+  <?php /*?><div class="row pt20">
+    <div class="col-md-12 col-sm-12 text-center">
+      <h1 class="h2 fs-46 text-dark mt0 pb10 mb5" style="border-bottom:1px solid #666666;">Search for Diamonds</h1>
+      <h4 class="h2 fs-18 text-dark mt0" style="text-transform:none;">With The Loose Diamond you have the opportunity to make a piece of jewelry completely 
+        one of a kind.</h4>
+    </div>
+  </div><?php */?>
+  <div class="search-diamonds">
+    <div id="mobile-ajax-loading" style="width: 100%; position: relative; display: none;">
+      <div class="loading" style="height: 1366px;"> <img src="<?php echo $this->getSkinUrl("dsearch/image/ajax-loading.gif"); ?>" width="66" height="66" /> </div>
+    </div>
+    <div class="search-diamonds-panel">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="reset-search text-right pb15" id="orginal_bar_link"> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">REFRESH</a><br>
+            <span id="similar_link" style="display: none;">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_similar();">VIEW SIMILAR DIAMONDS</a></span> </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 item">
+          <div class="row">
+            <div class="col-md-1 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#shape">SHAPE</a></div>
+            <div class="col-md-11 col-sm-10" style="padding:0">
+              <?php ?>
+              <ul class="product-shape">
+                <?php
+				 foreach($shapesArray as $shape): 
+					echo '<li ';
+					echo 'class="'.strtolower(str_replace(' ','-', $shape["label"])).'-details active" ';
+					echo 'data-action="'.(($shape["sortorder"]==0) ? "unselected" : "selected" ).'" ';
+					echo 'data-label="Loose Diamond|Shape|'.$shape["label"].'" ';
+					echo 'data-category="Filter" ';
+					echo 'data-shape="'.str_replace(" ","_",ucfirst(strtolower($shape["label"]))).'">';
+					echo '<a href="javascript:void(0);">';
+					echo '<span>';
+					echo $shape["label"];
+					echo '</span>';
+					echo '</a></li>';
+				endforeach; ?>
+                <?php /* ?><li class="round-details active" data-action="unselected" data-label="Loose Diamond|Shape|Round" data-category="Filter" data-shape="Round"><a href="javascript:void(0);"><span>ROUND</span></a></li>
+                <li class="princess-details active" data-action="selected" data-label="Loose Diamond|Shape|Princess" data-category="Filter" data-shape="Princess"><a href="javascript:void(0);"><span>PRINCESS</span></a></li>
+                <li class="cushion-details active" data-action="selected" data-label="Loose Diamond|Shape|Cushion" data-category="Filter" data-shape="Cushion"><a href="javascript:void(0);"><span>CUSHION</span></a></li>
+                <li class="asscher-details active" data-action="selected" data-label="Loose Diamond|Shape|Asscher" data-category="Filter" data-shape="Asscher"><a href="javascript:void(0);"><span>ASSCHER</span></a></li>
+                <li class="marquise-details active" data-action="selected" data-label="Loose Diamond|Shape|Marquise" data-category="Filter" data-shape="Marquise"><a href="javascript:void(0);"><span>MARQUISE</span></a></li>
+                <li class="oval-details active" data-action="selected" data-category="Filter" data-shape="Oval"><a href="javascript:void(0);"><span>OVAL</span></a></li>
+                <li class="radiant-details active" data-action="selected" data-label="Loose Diamond|Shape|Radiant" data-category="Filter" data-shape="Radiant"><a href="javascript:void(0);"><span>RADIANT</span></a></li>
+                <li class="pear-details active" data-action="selected" data-label="Loose Diamond|Shape|Pear" data-category="Filter" data-shape="Pear"><a href="javascript:void(0);"><span>PEAR</span></a></li>
+                <li class="emerald-details active" data-action="selected" data-label="Loose Diamond|Shape|Emerald" data-category="Filter" data-shape="Emerald"><a href="javascript:void(0);"><span>EMERALD</span></a></li>
+                <li class="heart-details active" data-action="selected" data-label="Loose Diamond|Shape|Heart" data-category="Filter" data-shape="Heart"><a href="javascript:void(0);"><span>HEART</span></a></li><?php */ ?>
+              </ul>
+              <input id="shapes" name="shapes" type="hidden" value="" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <?php if(Mage::getStoreConfig("diamondsearch/general_settings/spacial_diamond_avilability")==1): ?>  
+    <!--  Special Shapes   -->  
+    <div class="row">
+        <div class="col-md-12 item">
+          <div class="row">
+            <div class="col-md-1 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#specialshape">SPECIALITY SHAPES</a></div>
+            <div class="col-md-11 col-sm-10" style="padding:0">
+              <?php ?>
+              <ul class="product-specialshape">
+              	<?php $cookies = explode(',', $_COOKIE['spacialnew']); ?>
+              	<?php //print_r($cookies); ?>
+                <?php
+				 foreach($specialshapesArray as $specialshape): 
+				 $htmlen=htmlentities($specialshape["label"]);
+				 $diam=strtolower(preg_replace("/&#?[a-z0-9]+;/i","",$htmlen));
+				 $string = str_replace(' ', '-',$diam );
+				 if(in_array(($specialshape["label"]),$cookies)) { $class= "active"; } else { $class=''; }
+				 	//echo $class;
+					echo '<li ';
+					echo 'class="'.$string.'-details '.$class.'"';
+					echo 'data-action="'.(($specialshape["sortorder"]==0) ? "unselected" : "selected" ).'" ';
+					echo 'data-label="Loose Diamond|Shape|'.$specialshape["label"].'" ';
+					echo 'data-category="Filter" ';
+					echo 'data-specialshape="'.$specialshape["label"].'">';
+					echo '<a href="javascript:void(0);">';
+					echo '<span>';
+					echo $specialshape["label"];
+					echo '</span>';
+					echo '</a></li>';
+				endforeach; ?>
+              </ul>
+              <input id="specialshapes" name="specialshapes" type="hidden" value="" />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <?php endif; ?>
+      
+      <div class="row">
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#carat-weight">CARAT</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="carat_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Carat"></div>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <input id="min_carat" name="min_carat"  class="form-control  input-sm amount-min">
+                  </div>
+                  <div class="form-group pull-right">
+                    <input id="max_carat" name="max_carat"  class="form-control  input-sm amount-max">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#price">PRICE</a></div>
+            <div class="col-md-10 col-sm-10 text-center" <?php echo !$is_cfp ? "style='display:none'" : ""; ?>>
+              <?php echo $cfp_msg ? $cfp_msg : "CALL FOR PRICE"; ?>
+            </div>
+          	<div class="col-md-10 col-sm-10" <?php echo $is_cfp ? "style='display:none'" : ""; ?>>
+              <div class="search-noUiSlider">
+                <div id="shadow_price_slider" class="noUiSlider"></div>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <input id="min_price_display" type="text" pattern="[0-9]*" class="form-control input-sm amount-min" />
+                    <input id="min_price" name="min_price" type='text' class="form-control  input-sm amount-min hidden" />
+                  </div>
+                  <div class="form-group pull-right">
+                    <input id="max_price_display" type="text" pattern="[0-9]*" class="form-control  input-sm amount-max" />
+                    <input id="max_price" name="max_price" type='text' class="form-control  input-sm amount-max hidden" />
+                  </div>
+                </div>
+              </div>
+              <div class="search-noUiSlider">
+                <div id="price_slider" class="noUiSlider hidden" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Price"></div>
+              </div>
+            </div>
+          </div>
+        
+        
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 item" id="div_color">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#color">COLOR</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="color_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Color"></div>
+                <ul class="color-slider-data">
+                  <?php foreach($colorsArray as $color): echo "<li>".$color."</li>"; endforeach; ?>
+                </ul>
+                <div class="slider-data form-inline">
+                  <div class="text-left col-md-3 col-sm-3 col-xs-4 no-padding">
+                    <select id="min_color" name="min_color" class="form-control amount-min select-sm" style="padding:0">
+                    	<?php $i = 0;foreach($colorsArray as $color): 
+											echo "<option value='".$i++."'>".$color."</option>";
+											endforeach; ?>
+                    </select>
+                  </div>
+                  <div class="text-center col-md-6 col-sm-6 col-xs-4 no-padding">
+										<a href="javascript:" class="color active_slider color_switcher">Fancy Color</a>
+                  </div>
+                  <div class="text-right col-md-3 col-sm-3 col-xs-4 no-padding">
+                    <select id="max_color" name="max_color" class="form-control amount-min select-sm max_clr" style="padding:0">
+                    	<?php $i = 0;foreach($colorsArray as $color): 
+											echo "<option value='".$i++."'>".$color."</option>";
+											endforeach; ?>
+                    </select>
+                  </div>
+                </div>
+                <input id="colors" name="colors" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item hidden" id="div_fancycolor">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#fancycolor">FANCY</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="fancycolor_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Fancycolor"></div>
+                <ul class="fancycolor-slider-data">
+                  <?php foreach($fancycolorsArray as $fancycolor): echo "<li>".str_replace(" ",'<br class="visible-xs"> ',$fancycolor)."</li>"; endforeach; ?>
+                </ul>
+                <div class="slider-data form-inline">
+                  <div class="text-left col-md-3 col-sm-3 col-xs-3 no-padding">
+                    <select id="min_fancycolor" name="min_fancycolor" class="form-control amount-min select-sm" style="padding:0">
+                    	<?php $i = 0;foreach($fancycolorsArray as $fancycolor): 
+											echo "<option value='".$i++."'>".$fancycolor."</option>";
+											endforeach; ?>
+                    </select>
+                  </div>
+                  <div class="text-center col-md-6 col-sm-6 col-xs-6 no-padding">
+										<a href="javascript:" class="fancycolor color_switcher">White Diamonds</a>
+                  </div>
+                  <div class="text-right col-md-3 col-sm-3 col-xs-3 no-padding">
+                    <select id="max_fancycolor" name="max_fancycolor" class="form-control amount-min select-sm" style="padding:0">
+                    	<?php $i = 0;foreach($fancycolorsArray as $fancycolor): 
+											echo "<option value='".$i++."'>".$fancycolor."</option>";
+											endforeach; ?>
+                    </select>
+                  </div>
+                </div>
+                <input id="fancycolors" name="fancycolors" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#clarity">CLARITY</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="clarity_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Clarity"></div>
+                <ul class="clarity-slider-data">
+                  <?php foreach($claritiesArray as $clarity): echo "<li>".$clarity."</li>"; endforeach; ?>
+                </ul>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <select id="min_clarity" name="min_clarity" class="form-control amount-min select-sm" style="padding:0">
+                    	<?php $i = 0;foreach($claritiesArray as $clarity): 
+							echo "<option value='".$i++."'>".$clarity."</option>";
+							endforeach; ?>
+                    </select>
+                    <!--<input id="min_color" name="min_color" class="form-control  input-sm amount-min">-->
+                  </div>
+                  <div class="form-group pull-right">
+                    <select id="max_clarity" name="max_clarity" class="form-control amount-min select-sm" style="padding:0">
+                    	<?php $i = 0;foreach($claritiesArray as $clarity): 
+							echo "<option value='".$i++."'>".$clarity."</option>";
+							endforeach; ?>
+                    </select>
+                    <!--<input id="max_color" name="max_color" class="form-control  input-sm amount-max">-->
+                  </div>
+                </div>
+                <input id="clarities" name="clarities" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="advanced-search-wrapper">
+      <div class="form-inline advanced-search clearfix brandon-medium">
+        <div class="row"> 
+          <!--<div class="col-md-2 col-sm-4">-->
+          <div class="col-md-2 col-sm-4 heading-wrapper">
+            <div class="heading"><i id="adv_bar_toggler" class="icons-quadrate-plus ico-l"><span style="padding-left: 20px; font: 16px economica; float: left; width: 170px;">ADVANCED SEARCH</span></i></div>
+          </div>
+          <!--<div class="col-md-6 col-sm-8 hidden-xs text-right col-md-offset-1">-->
+          <div class="col-md-6 col-sm-8 search-check-lists-wrapper hidden-xs">
+            <div class="search-check-lists">
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Cut">
+                <label id="adv_bar_cut"><i class="icons-checkbox"></i><a href="javascript:void(0);">Cut</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Fluorescence">
+                <label id="adv_bar_fluorescence"><i class="icons-checkbox"></i><a href="javascript:void(0);">Fluorescence</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|L:W Ratio">
+                <label id="adv_bar_ratio"><i class="icons-checkbox"></i><a href="javascript:void(0);">Ratio</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Report">
+                <label id="adv_bar_report"><i class="icons-checkbox"></i><a href="javascript:void(0);">Certification</a></label>
+              </div>
+              <?php /*?><div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Collections">
+
+                <label id="adv_bar_collection"><i class="icons-checkbox"></i><a href="javascript:void(0);">Collections</a></label>
+
+              </div>
+
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Origin">
+
+                <label id="adv_bar_origin"><i class="icons-checkbox"></i><a href="javascript:void(0);">Origin</a></label>
+
+              </div><?php */?>
+            </div>
+          </div>
+          <div class="visible-sm clearfix"></div>
+          <div class="col-md-4 col-sm-8 col-md-offset-0 col-sm-offset-4 on-or-before-wrapper">
+            <div class="on-or-before"> <span class="ls-1 span-sno">STOCK NUMBER</span>
+              <div style="width:150px; height:30px; position:relative" class="form-group ls-0">
+                <input id="stock_number" class="form-control input-sm" type="text" name="stock_number" style="height:22px" />
+                <i class="ico-l icons-search" id="search_stock_number"></i> 
+                <script type="text/javascript">
+                function test(){}
+								//dtl.fetch_diamonds_result();
+                /*jQuery('select[name=shipping_day]').on('change', function() {
+                  var t = jQuery(this);
+                  var val = t.val();
+                  t.find('option[value=' + val + ']').click();
+                  jQuery('#is_not_advanced').val('true')
+                  jQuery('select[name=shipping_day_adv]').val(val)
+                  var sd = jQuery('select[name=shipping_day_adv]').next()
+                  sd.find('li[class=selected]').removeClass('selected')
+                  var rel_val = val-1
+                  sd.find('li[rel=' + rel_val + ']').addClass('selected')
+                  jQuery('select[name=shipping_day_adv]').next().find('button').find('.filter-option').text(t.find('option[value=' + val + ']').text())
+                  });*/
+                </script>
+                <input type="hidden" id="is_not_advanced" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="advanced-search-filter" style="display: none;">
+        <div class="container in" id="listpage-filter">
+          <div class="row">
+            <div class="col-md-5 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 cut text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#cut">CUT</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt5 pb5">
+                    <div id="cut_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Cut"></div>
+                    <ul class="cut-slider-data">
+                      <?php foreach($cutsArray as $cut): echo "<li>".str_replace(" ",'<br class="visible-xs"> ',$cut)."</li>"; endforeach; ?>
+                    </ul>
+                    <!--<ul class="cut-slider-data">
+                      <li>EXCELLENT</li>
+                      <li>VERY<br class="visible-xs">
+                        GOOD</li>
+                      <li>GOOD</li>
+                      <li>FAIR</li>
+                    </ul>-->
+                    <input id="cuts" name="cuts" type="hidden" value="" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-md-4 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 ratio text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#ratio">L:W RATIO</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt5 pb5">
+                    <div id="ratio_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamonds|Length To Width Ratio"></div>
+                    <div class="slider-data form-inline">
+                      <div class="form-group pull-left">
+                        <input id="min_ratio" name="min_ratio" type="text" class="form-control input-sm amount-min" />
+                      </div>
+                      <div class="form-group pull-right">
+                        <input id="max_ratio" name="max_ratio" type="text" class="form-control input-sm amount-max" />
+                      </div>
+                    </div>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 fluorescence text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#fluorescence">FLUORESCENCE</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt5 pb5">
+                    <div id="fluorescence_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Fluorescence"></div>
+                    <ul class="fluorescence-slider-data">
+                      <?php foreach($fluorescencesArray as $cut): echo "<li>".str_replace(" ",'<br class="visible-xs"> ',$cut)."</li>"; endforeach; ?>
+                    </ul>
+                    <!--<ul class="fluorescence-slider-data">
+                      <li>VERY<br class="visible-xs">
+                        STRONG</li>
+                      <li>STRONG</li>
+                      <li>MEDIUM</li>
+                      <li>FAINT</li>
+                      <li>NONE</li>
+                    </ul>-->
+                    <input id="fluorescences" name="fluorescences" type="hidden" value="" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+            <div id="report_div" class="col-md-4 col-sm-6 col-md-offset-1">
+              <dl>
+                <dt class="h6 text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#report">Certification</a></dt>
+			  	<?php
+                foreach($certificatesArray as $certificate): 
+					echo '<dd>';
+					echo '<div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|'.$certificate.'">';
+					echo '<label><i class="icons-checkbox"></i>'.$certificate.'</label>';
+			  		echo '<input name="c_report" type="checkbox" value="'.$certificate.'" />';
+					echo '</div>';
+					echo '</dd>';
+				endforeach;
+				?>
+                <!--<dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|GIA">
+                    <label><i class="icons-checkbox"></i>GIA</label>
+                    <input name="c_report" type="checkbox" value="GIA" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|HRD">
+                    <label><i class="icons-checkbox"></i>HRD</label>
+                    <input name="c_report" type="checkbox" value="HRD" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|EGL">
+                    <label><i class="icons-checkbox"></i>EGL</label>
+                    <input name="c_report" type="checkbox" value="EGL" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|IGI">
+                    <label><i class="icons-checkbox"></i>IGI</label>
+                    <input name="c_report" type="checkbox" value="IGI" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|AGS">
+                    <label><i class="icons-checkbox"></i>AGS</label>
+                    <input name="c_report" type="checkbox" value="AGS" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|Non-Certified">
+                    <label><i class="icons-checkbox"></i>Non-Certified</label>
+                    <input name="c_report" type="checkbox" value="Non-Certified" />
+                  </div>
+                </dd>-->
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="control-hide">
+        <button id="adv_bar_collapser" type="button" class="btn btn-sm btn-success" style="background:black; color:#fff; border:0; display: none;">HIDE <i class="icons-chevron-up-white ico-r"></i></button>
+      </div>
+    </div>
+    <div class="your-search-results table-responsive">
+      <div id="similar_bar" class="row ysr-heading" style="display: none;">
+        <div class="col-md-8 col-sm-6"><span class="text-dark">SIMILAR DIAMONDS</span></div>
+      </div>
+      <div id="original_bar" class="row ysr-heading">
+        <div class="col-md-12 col-sm-12 reset-search" id = "similar_bar_link" style='display: none;'> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">RESET SEARCH</a><br>
+          <span id="original_link">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_original();">VIEW ORIGINAL DIAMONDS</a></span> </div>
+        <?php /*?><div class="col-md-12 col-sm-12 reset-search" id="orginal_bar_link"> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">RESET SEARCH</a><br>
+          <span id="similar_link" style="display: none;">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_similar();">VIEW SIMILAR DIAMONDS</a></span> </div><?php */?>
+        <div class="col-md-12 col-sm-12 col-tabs">
+          <div class="ysr-tabs">
+          	<script> var sample_avilability = '<?php echo Mage::getStoreConfig("diamondsearch/general_settings/sample_avilability") ?>'; </script>
+            <ul class="nav nav-tabs custom-tabs">
+              <li class="active"><a data-toggle="tab" role="tab" id = 'tab_diamonds_search' style="cursor: default;"> <span>results (</span> <span id="totalResult">&nbsp;&nbsp;&nbsp;&nbsp;</span><span>)</span></a></li>
+              <li class=""><a data-toggle="tab" role="tab" id = 'tab_diamonds_recently_viewed' data-label="Loose Diamond|Search|Recently Viewed" data-action="Click" data-category="Tab" style="cursor: default;"><span>recently viewed (</span><span id="recently_viewed_totalResult">0</span><span>)</span></a></li>
+              <li class=""><a data-toggle="tab" role="tab" id = 'tab_diamonds_comparison' data-label="Loose Diamond|Search|Comparison" data-action="Click" data-category="Tab" style="cursor: default;"><span><?php echo $com_req_label ?> (</span><span id="comparison_totalResult">0</span><span>)</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="search-nothing-tips mb50 pt20 hidden"> Unfortunately, no diamonds match your selected criteria. Please <a href='<?php echo $this->getUrl("contacts");?>'>contact us</a> to speak to a diamond specialist to help you find the perfect diamond. </div>
+      
+      <div class="cm-row" id="listContainer">
+        <div class="<?php echo ($show_details_block ? "col-md-9" : "col-md-12"); ?>">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="search-results-outline search-results-outline-left">
+            <thead>
+              <tr>
+                <th width="100%" scope="col"> <table id="search_result_header_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="" data-target="#stock_number"><a href="javascript:void(0)" onclick="dtl.change_order_by('stock_number');">SKU</a></span><br><a href="javascript:void(0);"><i id="order_by_stock_number" class="icons-chevron-down" onclick="dtl.change_order_by('stock_number');"></i></a></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)" onclick="dtl.change_order_by('shape');">SHAPE</a></span><br><a href="javascript:void(0);"><i id="order_by_shape" class="icons-chevron-down" onclick="dtl.change_order_by('shape');"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);" onclick="dtl.change_order_by('carat');">CARAT</a></span><br><a href="javascript:void(0);"><i id="order_by_carat" class="icons-chevron-down" onclick="dtl.change_order_by('carat');"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)" onclick="dtl.change_order_by('color');">COLOR</a></span><br><a href="javascript:void(0);"><i id="order_by_color" class="icons-chevron-down" onclick="dtl.change_order_by('color');"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)" onclick="dtl.change_order_by('clarity');">CLARITY</a></span><br><a href="javascript:void(0);"><i id="order_by_clarity" class="icons-chevron-down" onclick="dtl.change_order_by('clarity');"></i></a></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)" onclick="dtl.change_order_by('cut');">CUT</a></span><br><a href="javascript:void(0);"><i id="order_by_cut" class="icons-chevron-down" onclick="dtl.change_order_by('cut');"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)" onclick="dtl.change_order_by('fluorescence');">FLUOR</a></span><br><a href="javascript:void(0);"><i id="order_by_fluorescence" class="icons-chevron-down" onclick="dtl.change_order_by('fluorescence');"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)" onclick="dtl.change_order_by('l:w');">L:W</a></span><br><a href="javascript:void(0);"><i id="order_by_l_w" class="icons-chevron-down" onclick="dtl.change_order_by('l:w');"></i></a></th>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)" onclick="dtl.change_order_by('report');">REPORT</a></span><br><a href="javascript:void(0);"><i id="order_by_report" class="icons-chevron-down" onclick="dtl.change_order_by('report');"></i></a></th>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_inhouse")): ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#inhouse"><a href="javascript:void(0)" onclick="dtl.change_order_by('inhouse');">InHouse</a></span><br><a href="javascript:void(0);"><i id="order_by_inhouse" class="icons-chevron-down" onclick="dtl.change_order_by('inhouse');"></i></a></th>
+                        <?php endif; ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)" onclick="dtl.change_order_by('price');">PRICE</a></span><br><a href="javascript:void(0);"><i id="order_by_price" class="icons-chevron-up" onclick="dtl.change_order_by('price');"></i></a></th>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_rapdiscount")): ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#percent_rap"><a href="javascript:void(0)" onclick="dtl.change_order_by('percent_rap');">RAP%</a></span><br><a href="javascript:void(0);"><i id="order_by_percent_rap" class="icons-chevron-down" onclick="dtl.change_order_by('percent_rap');"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_availability")): ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#availability"><a href="javascript:void(0)" onclick="dtl.change_order_by('availability');">AVAIL</a></span><br><a href="javascript:void(0);"><i id="order_by_availability" class="icons-chevron-down" onclick="dtl.change_order_by('availability');"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_dimensions")): ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#dimensions"><a href="javascript:void(0)" onclick="dtl.change_order_by('dimensions');">DIM</a></span><br><a href="javascript:void(0);"><i id="order_by_dimensions" class="icons-chevron-down" onclick="dtl.change_order_by('dimensions');"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_depth")): ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#depth"><a href="javascript:void(0)" onclick="dtl.change_order_by('depth');">DEPTH</a></span><br><a href="javascript:void(0);"><i id="order_by_depth" class="icons-chevron-down" onclick="dtl.change_order_by('depth');"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_tabl")): ?>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#tabl"><a href="javascript:void(0)" onclick="dtl.change_order_by('tabl');">TABLE</a></span><br><a href="javascript:void(0);"><i id="order_by_tabl" class="icons-chevron-down" onclick="dtl.change_order_by('tabl');"></i></a></th>
+                        <?php endif; ?>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default"><?php echo $com_req_label ?></a></span></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <table id="search_recently_header_table" style="display:none" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-toggle="" data-target="#stock_number"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_stock_number').click();">SKU</a></span><br><a href="javascript:void(0);"><i id="r_order_by_stock_number" class="icons-chevron-down" onclick="new_change_order_by('stock_number', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_shape').click();">SHAPE</a></span><br><a href="javascript:void(0);"><i id="r_order_by_shape" class="icons-chevron-down" onclick="new_change_order_by('shape', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);" onclick="jQuery('#r_order_by_carat').click();">CARAT</a></span><br><a href="javascript:void(0);"><i id="r_order_by_carat" class="icons-chevron-down" onclick="new_change_order_by('carat', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_color').click();">COLOR</a></span><br><a href="javascript:void(0);"><i id="r_order_by_color" class="icons-chevron-down" onclick="new_change_order_by('color', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_clarity').click();">CLARITY</a></span><br><a href="javascript:void(0);"><i id="r_order_by_clarity" class="icons-chevron-down" onclick="new_change_order_by('clarity', this);"></i></a></th>
+                        <th width="13%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_cut').click();">CUT</a></span><br><a href="javascript:void(0);"><i id="r_order_by_cut" class="icons-chevron-down" onclick="new_change_order_by('cut', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_fluorescence').click();">FLUOR</a></span><br><a href="javascript:void(0);"><i id="r_order_by_fluorescence" class="icons-chevron-down" onclick="new_change_order_by('fluorescence', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_l_w').click();">L:W</a></span><br><a href="javascript:void(0);"><i id="r_order_by_l_w" class="icons-chevron-down" onclick="new_change_order_by('l:w', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_report').click();">REPORT</a></span><br><a href="javascript:void(0);"><i id="r_order_by_report" class="icons-chevron-down" onclick="new_change_order_by('report', this);"></i></a></th>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_inhouse")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#inhouse"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_inhouse').click();">InHouse</a></span><br><a href="javascript:void(0);"><i id="r_order_by_inhouse" class="icons-chevron-down" onclick="new_change_order_by('inhouse', this);"></i></a></th>
+                        <?php endif; ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_price').click();">PRICE</a></span><br><a href="javascript:void(0);"><i id="r_order_by_price" class="icons-chevron-up" onclick="new_change_order_by('price', this);"></i></a></th>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_rapdiscount")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#percent_rap"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_percent_rap').click();">RAP%</a></span><br><a href="javascript:void(0);"><i id="r_order_by_percent_rap" class="icons-chevron-down" onclick="new_change_order_by('percent_rap', this);"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_availability")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#availability"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_availability').click();">AVAIL</a></span><br><a href="javascript:void(0);"><i id="r_order_by_availability" class="icons-chevron-down" onclick="new_change_order_by('availability', this);"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_dimensions")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#dimensions"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_dimensions').click();">DIM</a></span><br><a href="javascript:void(0);"><i id="r_order_by_dimensions" class="icons-chevron-down" onclick="new_change_order_by('dimensions', this);"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_depth")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#depth"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_depth').click();">DEPTH</a></span><br><a href="javascript:void(0);"><i id="r_order_by_depth" class="icons-chevron-down" onclick="new_change_order_by('depth', this);"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_tabl")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#tabl"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_tabl').click();">TABLE</a></span><br><a href="javascript:void(0);"><i id="r_order_by_tabl" class="icons-chevron-down" onclick="new_change_order_by('tabl', this);"></i></a></th>
+                        <?php endif; ?>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default"><?php echo $com_req_label ?></a></span></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <table id="search_comparison_header_table" style="display:none" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-toggle="" data-target="#stock_number"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_stock_number').click();">SKU</a></span><br><a href="javascript:void(0);"><i id="r_order_by_stock_number" class="icons-chevron-down" onclick="new_change_order_by('stock_number', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_price').click();">SHAPE</a></span><br><a href="javascript:void(0);"><i id="r_order_by_shape" class="icons-chevron-down" onclick="new_change_order_by('shape', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);" onclick="jQuery('#search_comparison_header_table #r_order_by_carat').click();">CARAT</a></span><br><a href="javascript:void(0);"><i id="r_order_by_carat" class="icons-chevron-down" onclick="new_change_order_by('carat', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_color').click();">COLOR</a></span><br><a href="javascript:void(0);"><i id="r_order_by_color" class="icons-chevron-down" onclick="new_change_order_by('color', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_clarity').click();">CLARITY</a></span><br><a href="javascript:void(0);"><i id="r_order_by_clarity" class="icons-chevron-down" onclick="new_change_order_by('clarity', this);"></i></a></th>
+                        <th width="13%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_cut').click();">CUT</a></span><br><a href="javascript:void(0);"><i id="r_order_by_cut" class="icons-chevron-down" onclick="new_change_order_by('cut', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_fluorescence').click();">FLUOR</a></span><br><a href="javascript:void(0);"><i id="r_order_by_fluorescence" class="icons-chevron-down" onclick="new_change_order_by('fluorescence', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_l_w').click();">L:W</a></span><br><a href="javascript:void(0);"><i id="r_order_by_l_w" class="icons-chevron-down" onclick="new_change_order_by('l:w', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_report').click();">REPORT</a></span><br><a href="javascript:void(0);"><i id="r_order_by_report" class="icons-chevron-down" onclick="new_change_order_by('report', this);"></i></a></th>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_inhouse")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#inhouse"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_inhouse').click();">InHouse</a></span><br><a href="javascript:void(0);"><i id="r_order_by_inhouse" class="icons-chevron-down" onclick="new_change_order_by('inhouse', this);"></i></a></th>
+						<?php endif; ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_price').click();">PRICE</a></span><br><a href="javascript:void(0);"><i id="r_order_by_price" class="icons-chevron-up" onclick="new_change_order_by('price', this);"></i></a></th>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_rapdiscount")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#percent_rap"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_percent_rap').click();">RAP%</a></span><br><a href="javascript:void(0);"><i id="r_order_by_percent_rap" class="icons-chevron-down" onclick="new_change_order_by('percent_rap', this);"></i></a></th>
+                        <?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_availability")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#availability"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_availability').click();">AVAIL</a></span><br><a href="javascript:void(0);"><i id="r_order_by_availability" class="icons-chevron-down" onclick="new_change_order_by('availability', this);"></i></a></th>
+						<?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_dimensions")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#dimensions"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_dimensions').click();">DIM</a></span><br><a href="javascript:void(0);"><i id="r_order_by_dimensions" class="icons-chevron-down" onclick="new_change_order_by('dimensions', this);"></i></a></th>
+						<?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_depth")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#depth"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_depth').click();">DEPTH</a></span><br><a href="javascript:void(0);"><i id="r_order_by_depth" class="icons-chevron-down" onclick="new_change_order_by('depth', this);"></i></a></th>
+						<?php endif; ?>
+                        <?php if(Mage::getStoreConfig("diamondsearch/general_settings/showcolumn_tabl")): ?>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#tabl"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_tabl').click();">TABLE</a></span><br><a href="javascript:void(0);"><i id="r_order_by_tabl" class="icons-chevron-down" onclick="new_change_order_by('tabl', this);"></i></a></th>
+						<?php endif; ?>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default"><?php echo $com_req_label ?></a></span></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left" valign="top"><div id="search-scrollbar">
+                    <div class="loading hidden" style="height: 710px;" > <img src="<?php echo $this->getSkinUrl("dsearch/image/ajax-loading.gif"); ?>" width="66" height="66" style="height:auto; width:auto" /> </div>
+                    <div id="result-scrollbar" class="scrollbar">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div id="recent-scrollbar" class="scrollbar" style="visibility:hidden;">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div id="cmp-scrollbar" class="scrollbar" style="visibility:hidden;">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_search_table' style="height: 710px;">
+                      <div class="overview">
+                        <table id="search_result_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                          <tfoot>
+		                    <tr><td colspan="100" align="center">If you do not see the diamond you are searching for please <a href='<?php echo $this->getUrl("contacts");?>'>contact us</a> for a larger selection</td></tr>
+		                  </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_recently_viewed_table' style="height: 710px; display: none;">
+                      <div class="overview">
+                        <table id="recently_viewed_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_comparison_table' style="height: 710px; display: none;">
+                      <div class="overview">
+                        <table id="comparison_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <thead>
+                          </thead>
+                          <tbody>
+                          </tbody>
+                          <tfoot>
+                          </tfoot>
+                        </table>
+                      </div>
+                    </div>
+                  </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="<?php echo ($show_details_block ? "col-md-3 hidden-sm hidden-xs" : "hidden"); ?>">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="search-results-outline">
+            <thead>
+              <tr>
+                <th width="100%" scope="col" style="text-align:center;">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td valign="top"><div class="diamond-information">
+                    <div class="no-info"> <img src="<?php echo $this->getSkinUrl("dsearch/image/no-info50x50.png"); ?>" />
+                      <p class="pt20">Hover over a diamond to see further details and shipping information.</p>
+                      <p class="pt20">Check the <?php echo $com_req_label ?> box to send multiple diamonds to the <?php echo ($com_req_label=="Request") ? "request" : "comparison" ?> tab.</p>
+                    </div>
+                    <div class="info container" id="diamond_info_panel" style="display: none; padding-top: 10px;"> </div>
+                  </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <input id="id_active_tab" type="hidden" value="None" />
+      <div id="errmsg"></div>
+    </div>
+  </div>
+</div>
+<style type="text/css">
+.dl-horizontal dt{width: 80px;}
+.dl-horizontal dd{margin-left: 90px;}
+</style>
+<?php /*?><div class="modal fade modal-type2" id="total-carat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Eternity Ring Carat Weight</h4>
+      </div>
+      <div class="modal-body">
+        <p>The ring size of an eternity ring determines its total carat weight. The total carat weight range reflects the difference in total carat weight between a size three and a size eight.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div><?php */?>
+<script type="text/javascript">
+  function refreshpage(url){
+    window.location.href= url;
+  }
+</script> 
+
+<!-- SITE BODY END -->
+
+<div class="standar h700" style="display:none;z-index:3008;border-width:2px;position:absolute;width:auto;height:auto;top:100px;left:230px;" id="refer_form">
+  <div style="display:none;" id="loading_refer" class="loading_preview"> <img src="<?php echo $this->getSkinUrl("dsearch/image/ajax-loading.gif"); ?>" width="66" height="66" /> </div>
+  <div id="loading_content"></div>
+</div>
+<script type="text/javascript">
+
+// handle the modals popup on mobile & tablet
+
+  if("ontouchstart" in document) {
+
+    jQuery("body").append("<style type='text/css'>/* for mobile move bug */.modal-open{overflow:auto;}.modal{position:absolute;top:0;bottom:0;overflow:visible;}body.modal-open{margin-right:0;}</style> ")
+
+    jQuery(".modal-backdrop").on('click', function() {
+
+      jQuery(".modal.fade.in").modal('hide');
+
+    });
+
+  }
+
+</script>
+<?php if($shpReq = $this->getRequest()->getParam("shape")):?>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	if(!jQuery(".<?php echo strtolower(trim($shpReq));?>-details").hasClass("active"))
+		jQuery(".<?php echo strtolower(trim($shpReq));?>-details a").trigger("click");
+});
+</script>
+<?php endif;?>
+
+<style>
+
+.product-shape li a, .product-specialshape li a {
+	<?php echo "width: 60px; height: 65px;" ?>
+}
+
+ul.product-specialshape li span {
+  color: #000 !important;
+  display: block;
+  font-family: "Economica",sans-serif !important;
+  font-size: 11px;
+  line-height: 16px !important;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  top: 71px;
+  width: 73px;
+  word-spacing: 2px;
+  margin: 0 auto;
+}
+
+ul.product-specialshape li {
+  float: left;
+  height: 133px;
+  margin: 4px;
+  padding: 5px;
+  width: 11.5%;
+}
+
+.product-specialshape .active {
+  border: 1px solid #cccccc;
+}
+
+@media only screen and (max-width: 992px){ 
+	.product-specialshape li {	<?php echo (!empty($shapesLabelArray)) ? "width: 15%" : ""; ?>	}
+}
+
+
+@media only screen and (max-width: 450px){ 
+	.product-specialshape li {	<?php echo (!empty($shapesLabelArray)) ? "width: 16.6667%" : ""; ?>	}
+}
+
+
+@media only screen and (max-width: 693px)  and (min-width: 549px)
+{
+
+	ul.product-specialshape li {
+	  float: left;
+	  height: 133px;
+	  padding: 10px;
+	  width: 18%;
+	}
+
+}
+
+@media only screen and (max-width: 548px)  and (min-width: 408px)
+{
+
+	ul.product-specialshape li {
+	  float: left;
+	  height: 133px;
+	  padding: 10px;
+	  width: 22.3% !important;
+	}
+
+}
+
+
+@media only screen and (max-width: 407px)  
+{
+
+	ul.product-specialshape li {
+	  float: left;
+	  height: 133px;
+	  padding: 10px;
+	  width: 30% !important;
+	}
+
+}
+
+
+</style>
+ 
+ 
+<script>
+
+function isInArray(value, array) 
+{
+		return array.indexOf(value) > -1;
+}
+
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};
+
+jQuery(".product-specialshape li").click(function() {
+ 
+	if(jQuery('#specialshapes').length > 0 && jQuery('#specialshapes').val() != '')
+	{
+		//alert('undefined');
+		var value=jQuery(this).attr('data-specialshape');
+		value= jQuery('#specialshapes').val() + ',' + (value); 
+		 
+		if(jQuery(this).hasClass('active'))
+		{	
+			var array = value.split(',');
+			//alert(array);
+			var avilability=isInArray(jQuery(this).attr('data-specialshape'),array);
+			if(avilability== true)
+			{
+				jQuery(this).removeClass('active');
+				var index = array.indexOf(jQuery(this).attr('data-specialshape'));
+				if (index > -1) {
+				 
+					array.remove(jQuery(this).attr('data-specialshape'));
+				}
+				jQuery("#specialshapes").val(array.toString());
+				 
+				setCookies('spacialnew', array.toString());
+				
+			}	
+		}
+		else
+		{		
+			jQuery(this).addClass('active');
+			jQuery("#specialshapes").val(value);
+			setCookies('spacialnew', value);	
+		}	
+			
+		dtl.fetch_diamonds_result();
+		
+	}
+	else
+	{
+		//jQuery("#specialshapes").val(jQuery(this).attr('data-specialshape'));
+		if(jQuery(this).hasClass('active'))
+		{	
+ 			string=jQuery("#specialshapes").val(jQuery(this).attr('data-specialshape'));
+			var array = string.split(',');
+			if(avilability== true)
+			{
+				jQuery(this).removeClass('active');
+				var index = array.indexOf(jQuery(this).attr('data-specialshape'));
+				 
+				if (index > -1) {
+				 
+					array.remove(jQuery(this).attr('data-specialshape'));
+				}
+				 
+				jQuery("#specialshapes").val(array.toString());
+				setCookies('spacialnew', array.toString());
+				 
+				
+			}
+			
+		}
+		else
+		{
+			jQuery(this).addClass('active');
+			jQuery("#specialshapes").val(jQuery(this).attr('data-specialshape'));
+			setCookies('spacialnew', jQuery(this).attr('data-specialshape')); 
+			
+		}	
+	
+ 
+		dtl.fetch_diamonds_result();
+	}		
+ 
+});
+</script> 
+ 
+ 
+
+

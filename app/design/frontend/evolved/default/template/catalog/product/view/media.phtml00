@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl('css/magiczoomplus.css'); ?>" type="text/css" media="screen"/>                
+<script src="<?php echo $this->getSkinUrl('js/magiczoomplus.js') ?>" type="text/javascript"></script>
+<?php
+    $_product = $this->getProduct();
+    $_helper = $this->helper('catalog/output');
+
+?>
+<div class="product-image product-image-zoom">
+    <div class="product-image-gallery">
+        <?php
+        
+        $theme = Ideal_Evolved_Block_Evolved::getConfig();
+        $disablezoom = $theme['productdetails_zoom_disabled'];
+        $disableMobilezoom = $theme['productdetails_mobile_zoom_disabled'];
+        $disableexpand = $theme['productdetails_zoom_expand_disabled'];
+        $zoomwidth = $theme['productdetails_zoom_width'];
+        $zoomheight = $theme['productdetails_zoom_height'];
+        $zoomposition = $theme['productdetails_zoom_position'];
+        $zoomalign = $theme['productdetails_zoom_align'];
+        
+        $_img = '<a class="MagicZoomPlus" id="Zoomer" rel="disable-expand:'.$disableexpand.';zoom-width:'.$zoomwidth.';zoom-height:'.$zoomheight.';disable-zoom:'.$disablezoom.';disable-align:'.$disablealign.';zoom-position:'.$zoomposition.'; selectors-effect: pounce; selectors-effect-speed: 600;" href="'.$this->helper('catalog/image')->init($_product, 'image').'" alt="'.$this->htmlEscape($this->getImageLabel()).'"><img  src="'.$this->helper('catalog/image')->init($_product, 'image')->resize(400,400).'" alt="'.$this->htmlEscape($this->getImageLabel()).'" title="'.$this->htmlEscape($this->getImageLabel()).'" /></a>';
+        echo $_helper->productAttribute($_product, $_img, 'image');
+    ?>
+    </div>
+</div>
+
+<?php if (count($this->getGalleryImages()) > 1): ?>
+<div class="more-views">
+    <ul class="product-image-thumbs">
+    <?php $i=0; foreach ($this->getGalleryImages() as $_image): ?>
+        <?php
+        if (($filterClass = $this->getGalleryFilterHelper()) && ($filterMethod = $this->getGalleryFilterMethod()) && !Mage::helper($filterClass)->$filterMethod($_product, $_image)):
+            continue;
+        endif;
+        ?>
+        <li>
+           <?php /*?> <a class="thumb-link" href="#" title="<?php echo $this->escapeHtml($_image->getLabel()) ?>" data-image-index="<?php echo $i; ?>">
+                <img src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(80,89); ?>"
+                     width="80" height="89" alt="<?php echo $this->escapeHtml($_image->getLabel()) ?>" />
+            </a><?php */?>
+            <a rel="zoom-id: Zoomer;" rev="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile())->resize();?>" href="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'image', $_image->getFile()); ?>" title="<?php echo $_product->getName();?>"><img src="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(90); ?>" alt="<?php echo $this->htmlEscape($_image->getLabel()) ?>" title="<?php echo $this->htmlEscape($_image->getLabel()) ?>"  width="90" height="90" /></a>
+        </li>
+    <?php $i++; endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+<?php echo $this->getChildHtml('after'); ?>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+	jQuery(window).resize(function() {
+		 if(jQuery(window).width() <= 550){	
+			 if('<?php echo $disableMobilezoom; ?>' == 'false')
+			 {
+				 jQuery( "#Zoomer" ).attr({
+					 'rel':'disable-expand: true ;zoom-width:<?php echo $zoomwidth; ?>;zoom-height:<?php echo $zoomheight; ?>;disable-zoom:<?php echo $disableMobilezoom; ?>;disable-align:<?php echo $disablealign; ?>;zoom-position:inner; selectors-effect: pounce; selectors-effect-speed: 600;',
+				 });
+			 }
+			 else
+			 {
+				 jQuery( "#Zoomer" ).attr({
+					 'rel':'disable-expand: true ;zoom-width:<?php echo $zoomwidth; ?>;zoom-height:<?php echo $zoomheight; ?>;disable-zoom:<?php echo $disableMobilezoom; ?>;disable-align:<?php echo $disablealign; ?>;zoom-position:<?php echo $zoomposition; ?>; selectors-effect: pounce; selectors-effect-speed: 600;',
+				 });
+			 }	 	
+			 MagicZoomPlus.refresh();		
+		 }else{					
+			 jQuery( "#Zoomer" ).attr({
+				 'rel':'disable-expand: <?php echo $disableexpand ?> ;zoom-width:<?php echo $zoomwidth; ?>;zoom-height:<?php echo $zoomheight; ?>;disable-zoom:<?php echo $disablezoom; ?>;disable-align:<?php echo $disablealign; ?>;zoom-position:<?php echo $zoomposition; ?>; selectors-effect: pounce; selectors-effect-speed: 600;',
+			 });	
+			 MagicZoomPlus.refresh();
+		}
+	});
+	jQuery(window).resize();
+});        
+</script>

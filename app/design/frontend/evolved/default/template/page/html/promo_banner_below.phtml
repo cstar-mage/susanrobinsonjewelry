@@ -1,0 +1,24 @@
+<?php 
+$evolvedmethod = new Ideal_Evolved_Block_Evolved();
+if(method_exists($evolvedmethod, 'getBlockConfig'))
+{	
+	$evolved_form_promo = $evolvedmethod->getBlockConfig('evolved_form_header_promo_banner');
+	$theme = array_merge($evolved_form_promo);
+	//echo "<pre>"; print_r($theme); echo "</pre>";
+}
+if(count($theme) == 0){ $theme = Mage::helper('evolved')->getThemeConfig(); }
+//echo "<pre>"; print_r($theme); echo "</pre>";
+$helper = Mage::helper('cms');
+$processor = $helper->getPageTemplateProcessor();
+$customblocktopbar = $processor->filter($theme['header_topbar_custom_block']);
+
+//echo "<pre>"; print_r($theme); echo "</pre>";
+
+?>
+
+<?php if($theme['header_promo_banner_onoff']== "enable" && $theme['header_promo_banner_position']== "below"): ?>
+		<div class="promo-module"><p><?php echo $theme['header_promo_input_data']; ?></p></div>
+	<?php endif; ?>
+	
+
+

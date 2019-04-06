@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <!-- <adminhtml_googlesheetimport_index>
+        <reference name="content">
+            <block type="googlesheetimport/adminhtml_googlesheetimport" name="googlesheetimport" />
+        </reference>
+    </adminhtml_googlesheetimport_index> -->
+</layout>

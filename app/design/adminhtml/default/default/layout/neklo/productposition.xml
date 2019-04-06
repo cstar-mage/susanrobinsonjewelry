@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!--
+NOTICE OF LICENSE
+
+This source file is subject to the NekloEULA that is bundled with this package in the file ICENSE.txt.
+
+It is also available through the world-wide-web at this URL: http://store.neklo.com/LICENSE.txt
+
+Copyright (c)  Neklo (http://store.neklo.com/)
+-->
+<layout>
+    <adminhtml_catalog_category_edit>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>neklo/productposition/css/styles.css</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/event.simulate.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/lodash.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/h5utils.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/NEKLO.Connectors.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/NEKLO.SimpleEventEmitter.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/NEKLO.ProductSorter.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>neklo/productposition/js/dnd_page_scroll.js</name>
+            </action>
+        </reference>
+        <reference name="content">
+            <block type="adminhtml/template" name="neklo.productposition.templates" template="neklo/productposition/category/tab/product/templates.phtml" before="-"/>
+            <block type="neklo_productposition/adminhtml_category_edit_js" name="neklo.productposition.js" template="neklo/productposition/category/edit/js.phtml" after="-"/>
+        </reference>
+    </adminhtml_catalog_category_edit>
+</layout>

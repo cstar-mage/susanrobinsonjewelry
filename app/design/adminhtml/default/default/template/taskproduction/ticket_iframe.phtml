@@ -1,0 +1,15 @@
+<?php 
+	$paramsfield = Mage::helper('taskproduction')->getRequestParamsPage();
+	//echo "<pre>";print_r($paramsfield);echo "</pre>";
+	$site_url = $paramsfield['siteurl'];
+	$column = $paramsfield['column'];
+	$dir = $paramsfield['dir'];
+if ((Mage::app()->getStore()->isAdminUrlSecure()) && (Mage::app()->getStore()->isCurrentlySecure())) { 
+	//secure mode your current URL is HTTPS ?>
+	<iframe src="https://production.idealbrandmarketing.com/magento/ticket.php?site_url=<?=$site_url;?>&column=<?=$column;?>&dir=<?=$dir;?>" width="100%" height="700px" style="border: 0px;"/>
+<?php } else { 
+	//your page is in HTTP mode ?>
+	<iframe src="http://production.idealbrandmarketing.com/magento/ticket.php?site_url=<?=$site_url;?>&column=<?=$column;?>&dir=<?=$dir;?>" width="100%" height="700px" style="border: 0px;"/>
+<?php } ?>
+
+

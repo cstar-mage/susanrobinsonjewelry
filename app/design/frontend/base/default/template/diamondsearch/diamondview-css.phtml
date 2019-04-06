@@ -1,0 +1,125 @@
+<?php
+	$googleFontEnable = (Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_enable_googlefont")) ? Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_enable_googlefont") : "";
+	$googleFont = (Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_all")) ? Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_all") : "Economica";
+	
+	$csstxt = "";
+	
+	if($googleFontEnable == 1)
+	{
+		$csstxt .= "<style type='text/css'>";
+		if($googleFont != ''){
+			$csstxt .="@import url(//fonts.googleapis.com/css?family=" . str_replace ( " ", "+", $googleFont ) . "); ";
+			$csstxt .="
+			.ds-container,
+			.diamond_detail,
+			.bigmenulist .short_info,
+			.diamond_price_detail,
+			.diamond_short_desc,
+			.ds-container .col-md-12 > p,
+			.short_info.cash_price,
+			.short_info.bankwire_price,
+			.advanced-search-wrapper label,
+			.ds-container h1,
+			.ds-container h2,
+			.ds-container h3,
+			.ds-container h4,
+			.ds-container h5,
+			.ds-container h6,
+			.ds-container .h1,
+			.ds-container .h2,
+			.ds-container .h3,
+			.ds-container .h4,
+			.ds-container .h5,
+			.ds-container .h6,
+			.ds-container .h2-s,
+			.ds-container .h3-s,
+			.ds-container input,
+			.ds-container button,
+			.ds-container select,
+			.ds-container textarea,
+			.ds-container .btn,
+			.breadcrumb,
+			.form-horizontal-md .control-label,
+			.form-xs .control-label,
+			.learn-more2,
+			.learn-more3,
+			.text-well,
+			.more-information,
+			.text-pretty,
+			.text-beautiful,
+			.text-brandon,.brandon-medium,
+			.brandon-regular,
+			.default-pagination,
+			.header-navgation,
+			.global-navgation .subnav ul,
+			.footer-groups-link dl dt,
+			.email-address-group .input-group-btn .btn,
+			.choose-your-ring-tabs,
+			.contact-information,
+			.tabs-product-detail .nav-tabs,
+			.listpage-pagination,
+			.checkbox .number,
+			.center-diamond-checkbox li .tooltip-inner,
+			.ysr-tabs .nav-tabs>li>a>span,
+			.search-results-outline,
+			.search-result-table td,
+			.diamond-information .no-info,
+			.diamond-information .info dl dd,
+			.product-shape li a span,
+			.list_carousel li .state,
+			.site-sidenav>li>a,
+			.site-sidenav>li li,
+			.gemstone-guidance-links .list-unstyled,
+			.email-address-group>.form-control,
+			.ds-container .btn,
+			.search-diamonds,
+			.search-diamonds p,
+			.search-results-outline .table-head span a,
+			.search-diamonds .advanced-search-filter dl dd,
+			.advanced-search .on-or-before .span-sno,
+			.diamond-certification-lists .caption,
+			.diamond-details-type-lists .list-unstyled,
+			.sample-image-only .explain,
+			.form-horizontal .control-label,
+			.email-address-group>input.form-control,
+			.feature_text,
+			.feature_title,
+			.color_green
+			{font-family: ".$googleFont." !important}";
+			
+			/*.form-control:-moz-placeholder,
+			.form-control::-moz-placeholder,
+			.form-control:-ms-input-placeholder,
+			.form-control::-webkit-input-placeholder,
+			.email-address-group>.form-control::-webkit-input-placeholder,
+			.email-address-group>.form-control::-moz-placeholder,
+			.email-address-group>.form-control:-ms-input-placeholder,
+			.email-address-group>.form-control:-moz-placeholder,*/
+			
+			$csstxt .="
+			.ds-container .diamond_name,
+			.ysr-tabs .nav-tabs,
+			.search-diamonds-panel .item .h5 a,
+			.diamond-information dt,
+			.search-diamonds .advanced-search-filter .h6 a
+			{font-family: ".$googleFont." !important;font-weight: bold !important}";
+		}
+		$csstxt .= "</style>";
+	}else{
+		/*
+		$csstxt .= "<style type='text/css'>";
+		$csstxt .="@import url(//fonts.googleapis.com/css?family=Economica";
+		
+		$csstxt .=".ds-container,.ds-container table th, .ds-container table td,ul.dsearch-main-tabs li .badge,.ds-container label,.ds-container table,
+					.slider_values span,.diamondsearch-index-index button, .diamondsearch-index-index input, .diamondsearch-index-index select,
+					 .diamondsearch-index-index table, .diamondsearch-index-index textarea, .diamondsearch-index-index a.adv_search_lnk,
+					.ds-container .h1,.ds-container .h2,.ds-container .h3,.ds-container .h4,.ds-container .h5,.ds-container .h6,
+				   .ds-container h1,.ds-container h2,.ds-container h3,.ds-container h4,.ds-container h5,.ds-container h6 {font-family: Economica !important}";
+		$csstxt .=".ds-container b,.ds-container strong ,.viewdetails .list-group-item > .badge,
+				.ds-container .grid-view .item .info {font-family: Economica !important;font-weight: bold !important}";
+		
+		$csstxt .= "</style>";
+		*/
+	}
+	echo $csstxt;
+?>

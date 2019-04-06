@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <dcevent_adminhtml_dcevent_index>
+        <reference name="content">
+            <block type="dcevent/adminhtml_dcevent" name="dcevent" />
+        </reference>
+    </dcevent_adminhtml_dcevent_index>
+</layout>

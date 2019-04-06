@@ -1,0 +1,123 @@
+<?php $custom_saleValues = Mage::getStoreConfig('customreferral/email/add_new_preference');
+	  $custom_saleArray = unserialize($custom_saleValues);
+	  $array = array_unique($custom_saleArray);
+	  $dupes = array_diff_key($custom_saleArray, $array ); 
+?>
+<div class="max-width-custom-refer">
+	
+			 <div class="page-title">
+					<h1><?php echo $this->__('REFER A FRIEND') ?></h1>
+			 </div>
+			 <form action="<?php echo $this->getUrl('customreferral/index/saveform') ?>" method="post" id="referfriend" class="referfriend-form">
+					<div class="refer-friend">
+						<ul class="form-list">
+							<li>
+								<label for="yourname" class="required"><em>*</em><?php echo $this->__('Your Full Name') ?></label>
+								<div class="input-box">
+									 <input type="text" name="name" id="name" class="input-text required-entry" value="<?php ?>" title="<?php echo $this->quoteEscape($this->__('Name')) ?>" />
+								</div>
+							</li>
+							<li>
+								<label for="yourname" class="required"><em>*</em><?php echo $this->__('Friend/Client You are Referring') ?></label>
+								<div class="input-box">
+									 <input type="text" name="friendrefer" id="friendrefer" class="input-text required-entry" value="<?php ?>" title="<?php echo $this->quoteEscape($this->__('Name')) ?>" />
+								</div>
+							</li>
+							<li>
+								<label for="telephone" class="required"><em>*</em><?php echo $this->__('Your Phone Number') ?></label>
+								<div class="input-box">
+									<input type="tel" name="telephone" id="telephone" class="input-text required-entry" value="<?php ?>" title="<?php echo $this->quoteEscape($this->__('Telephone')) ?>" />
+								</div>
+							</li>
+							<li>
+								<label for="email_address" class="required"><em>*</em><?php echo $this->__('Email Address') ?></label>
+								<div class="input-box">
+									<input type="email" autocapitalize="off" autocorrect="off" spellcheck="false" name="email" id="email_address" value="<?php  ?>" title="<?php echo $this->quoteEscape($this->__('Email Address')) ?>" class="input-text validate-email required-entry" />
+								</div>
+							</li>
+							<li>
+								<label for="preference" class="required"><em>*</em><?php echo $this->__('Preference') ?></label>
+								<select id="preference" name="preference" title="<?php echo $this->quoteEscape($this->__('preference')) ?>" class="validate-select">
+									<option value=""><?php echo $this->__("Please select Preference") ?></option>
+									<?php foreach($dupes as $custom_value) { ?>
+										<option value="<?php echo $custom_value['custom_sale_qty']; ?>"><?php echo $custom_value['custom_sale_qty']; ?></option> 
+									<?php } ?>
+								</select>
+							</li>
+						</ul>
+							<div class="buttons-set">
+								<button type="submit" class="button" title="<?php echo $this->quoteEscape($this->__('Submit')) ?>" name="send" id="send"><span><span><?php echo $this->__('Submit') ?></span></span></button>
+							</div>
+					</div>
+			 </form>
+	
+</div>
+            <?php
+                
+                /*
+                    This shows how to load specific fields from a record in the database.
+                    1) Note the load(15), this corresponds to saying "select * from table where table_id = 15"
+                    2) You can then just use the get(fieldname) to pull specific data from the table.
+                    3) If you have a field named news_id, then it becomes getNewsId, etc.
+                */
+                /*
+                $news = Mage::getModel('customreferral/customreferral')->load(15);
+                echo $news->getNewsId();
+                echo $news->getTitle();
+                echo $news->getContent();
+                echo $news->getStatus();
+                */
+                
+                /*
+                    This shows an alternate way of loading datas from a record using the database the "Magento Way" (using blocks and controller).
+ 					Uncomment blocks in /app/code/local/Namespace/Module/controllers/IndexController.php if you want to use it.
+
+               */
+                /*
+                $object = $this->getCustomreferral();
+                echo 'id: '.$object['test_id'].'<br/>';
+				echo 'title: '.$object['title'].'<br/>';
+				echo 'content: '.$object['content'].'<br/>';
+				echo 'status: '.$object['status'].'<br/>';
+                */            
+            
+            
+                /*
+                    This shows how to load multiple rows in a collection and save a change to them.
+                    1) The setPageSize function will load only 5 records per page and you can set the current Page with the setCurPage function.
+                    2) The $collection->walk('save') allows you to save everything in the collection after all changes have been made.
+                */
+                /*
+                $i = 0;
+                
+                $collection = Mage::getModel('customreferral/customreferral')->getCollection();
+                $collection->setPageSize(5);
+                $collection->setCurPage(2);
+                $size = $collection->getSize();
+                $cnt = count($collection);
+                foreach ($collection as $item) {
+                    $i = $i+1;
+                    $item->setTitle($i);
+                    echo $item->getTitle();
+                }
+
+                $collection->walk('save');
+                */
+                
+                /*
+                    This shows how to load a single record and save a change.
+                    1) Note the setTitle, this corresponds to the table field name, title, and then you pass it the text to change.
+                    2) Call the save() function only on a single record.
+                */
+                /*
+                $object = Mage::getModel('customreferral/customreferral')->load(1);
+                $object->setTitle('This is a changed title');
+                $object->save();
+				*/
+
+            ?> 
+<script type="text/javascript">
+    //< ![CDATA[
+        var customForm = new VarienForm('referfriend');
+    //]]>
+</script>

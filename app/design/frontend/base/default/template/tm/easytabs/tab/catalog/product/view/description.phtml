@@ -1,0 +1,13 @@
+<?php
+/**
+ * Product description template
+ *
+ * @see TM_EasyTabs_Block_Tab_Product_Description
+ */
+?>
+<?php $_description = $this->getProduct()->getDescription(); ?>
+<?php if ($_description): ?>
+    <div class="std">
+        <?php echo $this->helper('catalog/output')->productAttribute($this->getProduct(), $_description, 'description') ?>
+    </div>
+<?php endif; ?>

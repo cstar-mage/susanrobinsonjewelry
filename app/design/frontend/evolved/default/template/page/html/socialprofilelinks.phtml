@@ -1,0 +1,56 @@
+ <?php
+ //$theme = Mage::helper('evolved')->getThemeConfig(); 
+ $evolvedmethod = new Ideal_Evolved_Block_Evolved();
+ if(method_exists($evolvedmethod, 'getBlockConfig'))
+ {
+	 $theme = $evolvedmethod->getBlockConfig('evolved_form_social');
+ }
+ if(count($theme) == 0){ $theme = Mage::helper('evolved')->getThemeConfig(); }
+ $socialexplode = explode("/",$theme['social_icons_theme']);
+ $socialexplodearr = explode(".",$socialexplode[1]);
+
+$helper = Mage::helper('cms');
+$processor = $helper->getPageTemplateProcessor(); ?>
+
+<?php 
+$sitetitle = Mage::getStoreConfig('general/store_information/name');
+$siteurl = Mage::getBaseUrl();
+
+	if($theme['social_facebook_url'] && $theme['social_facebook_url'] != ""): 
+		$socialurls[] = $theme['social_facebook_url'];
+	endif; 
+		
+	if($theme['social_twitter_url'] && $theme['social_twitter_url'] != ""):
+		$socialurls[] = $theme['social_twitter_url'];
+	endif; 
+	
+	if($theme['social_pinterest_url'] && $theme['social_pinterest_url'] != ""):
+		$socialurls[] = $theme['social_pinterest_url'];
+	endif; 
+	
+	if($theme['social_instagram_url'] && $theme['social_instagram_url'] != ""):
+		$socialurls[] = $theme['social_instagram_url'];
+	endif; 
+	
+	if($theme['social_youtube_url'] && $theme['social_youtube_url'] != ""):
+		$socialurls[] = $theme['social_youtube_url'];
+	endif; 
+	
+	if($theme['social_gplus_url'] && $theme['social_gplus_url'] != ""):
+		$socialurls[] = $theme['social_gplus_url'];
+	endif; 
+	
+	if($theme['social_linkedin_url'] && $theme['social_linkedin_url'] != ""):
+		$socialurls[] = $theme['social_linkedin_url'];
+	endif; 
+	
+	if($theme['social_tumbler_url'] && $theme['social_tumbler_url'] != ""):
+		$socialurls[] = $theme['social_tumbler_url'];	
+	endif; 
+
+	$socialarray = array('@context'=>"http://schema.org",'@type'=>"Person",'name'=>$sitetitle,'url'=>$siteurl,'sameAs'=>$socialurls);
+	$socialjson = json_encode($socialarray);
+		
+?>
+
+<script type="application/ld+json"><?php echo $socialjson; ?></script>

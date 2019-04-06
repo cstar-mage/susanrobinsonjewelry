@@ -1,0 +1,58 @@
+<script id="template-item" type="text/template">
+  <div class="nd-card">
+    <span btn="attached" class="nd-btn attached">
+      <i class="nd-icon nd-pin"></i>
+    </span>
+    <div class="nd-box-img">
+      <img src="<%= image %>" alt="">
+    </div>
+    <div class="nd-box-info">
+      <p class="nd-box-info__item name">
+        <%= name %>
+      </p>
+      <p class="nd-box-info__item sku">
+        SKU: <%= sku %>
+      </p>
+      <p class="nd-box-info__item price">
+        <%= price %>
+      </p>
+    </div>
+  </div>
+  <div class="nd-card-hover">
+    <span btn="attached" class="nd-btn attached">
+      <i class="nd-icon nd-pin"></i>
+    </span>
+    <div class="nd-box-img">
+      <img src="<%= image %>" alt="">
+    </div>
+    <div class="nd-box-info">
+      <p class="nd-box-info__item name">
+        <%= name %>
+      </p>
+      <p class="nd-box-info__item sku">
+        SKU: <%= sku %>
+      </p>
+      <p class="nd-box-info__item price">
+        <%= price %>
+      </p>
+    </div>
+    <div class="nd-row-buttons">
+      <span class="nd-btn action" btn="toBegin">
+         <i class="nd-icon nd-left-brackets"></i>
+      </span>
+      <span class="nd-btn action" btn="toLeft">
+        <i class="nd-icon nd-left-arrow"></i>
+      </span>
+      <span class="nd-btn action" btn="toRight">
+        <i class="nd-icon nd-right-arrow"></i>
+      </span>
+      <span class="nd-btn action" btn="toEnd">
+        <i class="nd-icon nd-right-brackets"></i>
+      </span>
+    </div>
+</script>
+
+<script type="text/template" id="template-separator">
+    <%= value %> Page
+    <hr>
+</script>

@@ -1,0 +1,807 @@
+<script>
+	var dataLayer = dataLayer || [];
+    dataLayer.push({ "pageGroup" : "Listing pages" });
+    var content_group = '';
+</script>
+<link href="<?php echo $this->getSkinUrl("css/dsearch/global-mini.css") ?>" rel="stylesheet">
+<link href="<?php echo $this->getSkinUrl("css/dsearch/valentines-day2015.css") ?>" rel="stylesheet">
+<?php /*?><script src="<?php echo $this->getJsUrl("dsearch/global-mini.js") ?>"></script><?php */?>
+<script type="text/javascript">
+	var pr_style_sheet = '<?php echo $this->getSkinUrl("css/dsearch/express.css") ?>';
+	var is_mobile = false;
+	var is_ipad = false;
+	var currency_symbol = '<?php echo Mage::app()->getLocale()->currency( $currency_code )->getSymbol(); ?>';
+	var canada_country = false;
+	var australia_country = false;
+	set_version_to_cookie('india', 'USD', 'False', 'False');
+</script>
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("css/dsearch/scrollbar.css") ?>" />
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("css/dsearch/jquery.nouislider.css") ?>" />
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("css/dsearch/bootstrap-select.css") ?>" />
+<!--/*styling settings from admin*/-->
+<style type="text/css">
+/*SLIDER COLOR*/
+.noUi-horizontal .noUi-base{
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/slider_bgcolor").";" : ""; ?>
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_shadow_color") ? "box-shadow: 0 5px 5px ".Mage::getStoreConfig("diamondsearch/design_settings/slider_shadow_color")." inset;" : ""; ?>
+}
+/*SLIDER unselected COLORs*/
+.ui-slider-left-cap,.ui-slider-right-cap {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_bgcolor").";" : ""; ?>
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_shadow_color") ? "box-shadow: 0 0 3px ".Mage::getStoreConfig("diamondsearch/design_settings/slider_disabled_shadow_color")." inset;" : ""; ?>
+}
+/*ADVANCED SEARCH bg*/
+.advanced-search {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/advanced_search_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/advanced_search_bgcolor").";" : ""; ?>
+}
+/*TABS bg*/
+.ysr-tabs .nav-tabs > li.active > a {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/tabs_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/tabs_bgcolor").";" : ""; ?>
+}
+/*TABLE HEADERS bg */
+.search-results-outline > thead > tr > th{
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_header_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/table_header_bgcolor").";" : ""; ?>
+}
+/*ODD row bg */
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_row_odd_bgcolor") ? "background-color:".Mage::getStoreConfig("diamondsearch/design_settings/table_row_odd_bgcolor").";" : ""; ?>
+}
+/*EVEN row bg */
+.search-result-table td {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_row_even_bgcolor") ? "background:".Mage::getStoreConfig("diamondsearch/design_settings/table_row_even_bgcolor").";" : ""; ?>
+}
+/*row HOVER bg */
+.table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > th {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/table_row_hover_bgcolor") ? "background-color:".Mage::getStoreConfig("diamondsearch/design_settings/table_row_hover_bgcolor").";" : ""; ?>
+}
+/*VIEW DIAMOND button bg */
+.btn-success {
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/view_button_color") ? "background-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_color")."; border-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_color").";" : ""; ?>
+}
+/*VIEW DIAMOND button HOVERs bg */
+.btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .open .dropdown-toggle.btn-success, .btn-secondary:hover{
+	<?php echo Mage::getStoreConfig("diamondsearch/design_settings/view_button_hover_color") ? "background-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_hover_color")."; border-color: ".Mage::getStoreConfig("diamondsearch/design_settings/view_button_hover_color").";" : ""; ?>
+}
+</style>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.tinyscrollbar.min.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.nouislider.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/bootstrap-select.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/json2.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/search_diamond.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/new_tab_diamond_result_table.js") ?>"></script>
+<script type="text/javascript">
+  var MIN_PRICE = '', MAX_PRICE = '', MIN_CARAT = '', MAX_CARAT = '';
+  //var shape_ranges = {"Asscher": [1840, 102370, 0.54, 6.0], "Heart": [950, 552690, 0.31, 5.73], "Radiant": [990, 125520, 0.3, 7.02], "Marquise": [580, 126060, 0.26, 3.02], "Pear": [550, 178390, 0.25, 6.2], "Princess": [490, 259400, 0.25, 10.2], "Cushion": [780, 422570, 0.31, 10.18], "Emerald": [550, 431940, 0.28, 10.37], "Oval": [570, 226620, 0.3, 5.06], "Round": [610, 872890, 0.25, 14.08]};
+  var shape_ranges = <?php echo Mage::helper("diamondsearch")->getShapeRangesJson(); ?>;
+  var curr_symbol = '<?php echo Mage::app()->getLocale()->currency( $currency_code )->getSymbol(); ?>';
+  var collection_params = [];
+  var origin_params = [];
+  var report_params = [];
+  var view_link = "<?php echo $this->getUrl("diamondsearch/index/view")."id/" ?>";
+  var search_path = "/loose-diamonds/search/";
+  var stock_number_params =  ["all"];
+  var _shapes = '';
+  if (_shapes == "") {
+    _shapes = "Round";
+  }
+  jQuery(document).ready(function() {
+      jQuery('.selectpicker').selectpicker();
+    if ( 'ontouchstart' in window ) {
+      jQuery('.product-shape li a').hover(function(){
+        jQuery(this).click();
+        this.stopPropagation();
+      }, function() {});
+    } else {
+      // Don't show popover for tablet.
+      jQuery('.collection-hint').popover();
+    }
+
+    var sp_str = reset_diamonds_search_params();
+    // var sp_str = jQuery.cookie('search_params'+jQuery.trim('$'));
+    var prev_curr = jQuery.cookie('search_curr');
+    var sp_dict = undefined;
+
+    if (sp_str) {
+      try {
+        sp_dict = jQuery.parseJSON(sp_str, true);
+      } catch(e) {
+        sp_dict = undefined;
+      }
+    }
+
+    if (sp_dict != undefined) {
+      MIN_PRICE = sp_dict.MIN_PRICE;
+      MAX_PRICE = sp_dict.MAX_PRICE;
+      MIN_CARAT = sp_dict.MIN_CARAT;
+      MAX_CARAT = sp_dict.MAX_CARAT;
+
+      if ('' === '' && sp_dict.shapes != undefined) {
+        _shapes = sp_dict.shapes;
+      }
+      if (origin_params.length == 0 && sp_dict.origins) {
+        var _t = '["'+sp_dict.origins+'"]';
+        origin_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+      }
+      if (collection_params.length == 0  && sp_dict.collections) {
+        var _t = '["'+sp_dict.collections+'"]';
+        collection_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+      }
+      if (report_params.length == 0  && sp_dict.reports) {
+        var _t = '["'+sp_dict.reports+'"]';
+        report_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+      }
+      if (sp_dict.stock_number) {
+        var _t = '["'+sp_dict.stock_number+'"]';
+        stock_number_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+      }
+      var ratio_min_value = 1.00, ratio_max_value = 2.75;
+      if (sp_dict.min_ratio != undefined) { ratio_min_value = sp_dict.min_ratio; }
+      if (sp_dict.max_ratio != undefined) { ratio_max_value = sp_dict.max_ratio; }
+
+      init_search_panel(
+        _shapes,
+        sp_dict.cuts,
+        sp_dict.colors,
+        sp_dict.clarities,
+		sp_dict.fluorescences,
+        sp_dict.min_carat,
+        sp_dict.max_carat,
+        sp_dict.min_price,
+        sp_dict.max_price,
+        ratio_min_value,
+        ratio_max_value,
+        collection_params,
+        origin_params,
+        report_params,
+        stock_number_params
+      );
+      dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', sp_dict.row, sp_dict.order_by,
+        sp_dict.order_method, 100, view_link, search_path);
+    } else {
+      init_search_panel(
+        _shapes,
+        "",
+        "",
+        "",
+		"",
+        "0.25",
+        "14.08",
+        "610",
+        "872890",
+        "0.00",
+        "0.00",
+        collection_params,
+        origin_params,
+        report_params,
+        stock_number_params
+      );
+
+      dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', 0, 'price',
+        'asc', 100, view_link, search_path);
+    }
+
+    dtl.fetch_result();
+    init_status = setInterval(function() {
+
+      if (dtl.lastAjax && dtl.lastAjax.status !== undefined) {
+        fetch_recently_viewed_result();
+        init_comparson();
+        clearInterval(init_status);
+      }
+    }, 200);
+
+    jQuery('#tab_diamonds_search').click(function(){
+      if (dtl.total_count === 0 && is_similar_show == 'N'){
+        jQuery('#listContainer').addClass('hidden');
+        jQuery('.search-nothing-tips').removeClass('hidden');
+        jQuery('.search-nothing-tips').show();
+      }
+
+      else{
+
+        jQuery('.search-nothing-tips').addClass('hidden');
+
+        jQuery('#listContainer').removeClass('hidden');
+
+      }
+
+      jQuery('.scrollbar').css('visibility', 'hidden');
+
+      jQuery('#result-scrollbar').css('visibility','visible');
+
+      jQuery('#search_recently_header_table').css('display', 'none');
+
+      jQuery('#search_comparison_header_table').css('display', 'none');
+
+      jQuery('#search_result_header_table').css('display', 'block');
+
+      jQuery('#diamonds_recently_viewed_table').css('display','none');
+
+      jQuery('#diamonds_comparison_table').css('display','none');
+
+      jQuery('#diamonds_search_table').css('display','block');
+
+    });
+
+    jQuery('#tab_diamonds_recently_viewed').click(function(){
+
+      jQuery('.search-nothing-tips').addClass('hidden');
+
+      jQuery('#listContainer').removeClass('hidden');
+
+      jQuery('.scrollbar').css('visibility', 'hidden');
+
+      jQuery('#recent-scrollbar').css('visibility','visible');
+
+      jQuery('#search_recently_header_table').css('display', 'block');
+
+      jQuery('#search_comparison_header_table').css('display', 'none');
+
+      jQuery('#search_result_header_table').css('display', 'none');
+
+      jQuery('#diamonds_recently_viewed_table').css('display','block');
+
+      jQuery('#diamonds_comparison_table').css('display','none');
+
+      jQuery('#diamonds_search_table').css('display','none');
+
+    });
+
+    jQuery('#tab_diamonds_comparison').click(function(){
+
+      jQuery('.search-nothing-tips').addClass('hidden');
+
+      jQuery('#listContainer').removeClass('hidden');
+
+      jQuery('.scrollbar').css('visibility', 'hidden');
+
+      jQuery('#cmp-scrollbar').css('visibility','visible');
+
+      jQuery('#search_recently_header_table').css('display', 'none');
+
+      jQuery('#search_comparison_header_table').css('display', 'block');
+
+      jQuery('#search_result_header_table').css('display', 'none');
+
+      jQuery('#diamonds_recently_viewed_table').css('display','none');
+
+      jQuery('#diamonds_comparison_table').css('display','block');
+
+      jQuery('#diamonds_search_table').css('display','none');
+
+    });
+
+    jQuery("#recently_viewed_table").delegate("div","click", function(){save_compared(this);});
+
+    jQuery("#search_result_table").delegate("div","click", function(){save_compared(this);});
+
+    jQuery("#comparison_table").delegate("div","click", function(){save_compared(this);});
+
+
+
+    jQuery.cookie('cyo_shape', "", {path: '/'});
+
+  });
+
+</script>
+
+<!-- Overlay section -->
+
+<div id="overlay" style="left:0;display:none; width:100%; height:100%; position: absolute; z-index: 2008; background-color:#82838E; FILTER: alpha(opacity=60); opacity: 0.6; moz-opacity: 0.6;"> 
+  <script type="text/javascript">
+
+    if (jQuery.browser.msie) {
+
+      document.write('<iframe height="100%" width="100%" style="FILTER: alpha(opacity=10); opacity: 0.1; moz-opacity: 0; z-index:2008;" frameborder="no" ></iframe>');
+
+    }
+
+    jQuery('#overlay').click(function(){
+
+      jQuery('.overPopup').hide();
+
+      jQuery('#overlay').removeClass('overPopup');
+
+    });
+
+  </script> 
+</div>
+
+<!-- End Overlay section --> 
+
+<!-- SITE BODY START -->
+
+<div class="container">
+  <div class="row pt20">
+    <div class="col-md-12 col-sm-12 text-center">
+      <h1 class="h2 fs-46 text-dark mt0 pb10 mb5" style="border-bottom:1px solid #666666;">Search for Diamonds</h1>
+      <h4 class="h2 fs-18 text-dark mt0 pb40" style="text-transform:none;">With The Loose Diamond you have the opportunity to make a piece of jewelry completely 
+        one of a kind.</h4>
+    </div>
+  </div>
+  <div class="search-diamonds">
+    <div id="mobile-ajax-loading" style="width: 100%; position: relative; display: none;">
+      <div class="loading" style="height: 1366px;"> <img src="<?php echo $this->getSkinUrl("css/image/ajax-loading.gif"); ?>" width="66" height="66" /> </div>
+    </div>
+    <div class="search-diamonds-panel">
+      <div class="row">
+        <div class="col-md-12 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#shape">SHAPE</a></div>
+            <div class="col-md-10 col-sm-10" style="padding:0">
+              <ul class="product-shape">
+                <li class="round-details active" data-action="unselected" data-label="Loose Diamond|Shape|Round" data-category="Filter" data-shape="Round"><a href="javascript:void(0);"><span>ROUND</span></a></li>
+                <li class="princess-details active" data-action="selected" data-label="Loose Diamond|Shape|Princess" data-category="Filter" data-shape="Princess"><a href="javascript:void(0);"><span>PRINCESS</span></a></li>
+                <li class="cushion-details active" data-action="selected" data-label="Loose Diamond|Shape|Cushion" data-category="Filter" data-shape="Cushion"><a href="javascript:void(0);"><span>CUSHION</span></a></li>
+                <li class="asscher-details active" data-action="selected" data-label="Loose Diamond|Shape|Asscher" data-category="Filter" data-shape="Asscher"><a href="javascript:void(0);"><span>ASSCHER</span></a></li>
+                <li class="marquise-details active" data-action="selected" data-label="Loose Diamond|Shape|Marquise" data-category="Filter" data-shape="Marquise"><a href="javascript:void(0);"><span>MARQUISE</span></a></li>
+                <li class="oval-details active" data-action="selected" data-category="Filter" data-shape="Oval"><a href="javascript:void(0);"><span>OVAL</span></a></li>
+                <li class="radiant-details active" data-action="selected" data-label="Loose Diamond|Shape|Radiant" data-category="Filter" data-shape="Radiant"><a href="javascript:void(0);"><span>RADIANT</span></a></li>
+                <li class="pear-details active" data-action="selected" data-label="Loose Diamond|Shape|Pear" data-category="Filter" data-shape="Pear"><a href="javascript:void(0);"><span>PEAR</span></a></li>
+                <li class="emerald-details active" data-action="selected" data-label="Loose Diamond|Shape|Emerald" data-category="Filter" data-shape="Emerald"><a href="javascript:void(0);"><span>EMERALD</span></a></li>
+                <li class="heart-details active" data-action="selected" data-label="Loose Diamond|Shape|Heart" data-category="Filter" data-shape="Heart"><a href="javascript:void(0);"><span>HEART</span></a></li>
+              </ul>
+              <input id="shapes" name="shapes" type="hidden" value="" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#carat-weight">CARAT</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="carat_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Carat"></div>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <input id="min_carat" name="min_carat"  class="form-control  input-sm amount-min">
+                  </div>
+                  <div class="form-group pull-right">
+                    <input id="max_carat" name="max_carat"  class="form-control  input-sm amount-max">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#price">PRICE</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="shadow_price_slider" class="noUiSlider"></div>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <input id="min_price_display" type="text" pattern="[0-9]*" class="form-control input-sm amount-min" />
+                    <input id="min_price" name="min_price" type='text' class="form-control  input-sm amount-min hidden" />
+                  </div>
+                  <div class="form-group pull-right">
+                    <input id="max_price_display" type="text" pattern="[0-9]*" class="form-control  input-sm amount-max" />
+                    <input id="max_price" name="max_price" type='text' class="form-control  input-sm amount-max hidden" />
+                  </div>
+                </div>
+              </div>
+              <div class="search-noUiSlider">
+                <div id="price_slider" class="noUiSlider hidden" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Price"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="row">
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#color">COLOR</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="color_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Color"></div>
+                <ul class="color-slider-data">
+                  <li>D</li>
+                  <li>E</li>
+                  <li>F</li>
+                  <li>G</li>
+                  <li>H</li>
+                  <li>I</li>
+                  <li>J</li>
+                  <li>K</li>
+                  <li>L-Z</li>
+                </ul>
+                <input id="colors" name="colors" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a href="javascript:void(0);" data-toggle="modal" data-target="#clarity">CLARITY</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="clarity_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Clarity"></div>
+                <ul class="clarity-slider-data">
+                  <li>FL</li>
+                  <li>IF</li>
+                  <li>VVS1</li>
+                  <li>VVS2</li>
+                  <li>VS1</li>
+                  <li>VS2</li>
+                  <li>SI1</li>
+                  <li>SI2</li>
+                  <li>SI3</li>
+                  <li>I1</li>
+                </ul>
+                <input id="clarities" name="clarities" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <div class="advanced-search-wrapper">
+      <div class="form-inline advanced-search clearfix brandon-medium">
+        <div class="row"> 
+          <div class="col-md-4 col-sm-4">
+            <div class="heading"><i id="adv_bar_toggler" class="icons-quadrate-plus ico-l"></i> ADVANCED SEARCH</div>
+          </div>
+          
+          <div class="col-md-6 col-sm-8 hidden-xs text-right col-md-offset-1">
+            <div class="search-check-lists">
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Cut">
+                <label id="adv_bar_cut"><i class="icons-checkbox"></i><a href="javascript:void(0);">Cut</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Fluorescence">
+                <label id="adv_bar_fluorescence"><i class="icons-checkbox"></i><a href="javascript:void(0);">Fluorescence</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|L:W Ratio">
+                <label id="adv_bar_ratio"><i class="icons-checkbox"></i><a href="javascript:void(0);">Ratio</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Report">
+                <label id="adv_bar_report"><i class="icons-checkbox"></i><a href="javascript:void(0);">Certification</a></label>
+              </div>
+              <?php /*?><div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Collections">
+
+                <label id="adv_bar_collection"><i class="icons-checkbox"></i><a href="javascript:void(0);">Collections</a></label>
+
+              </div>
+
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Origin">
+
+                <label id="adv_bar_origin"><i class="icons-checkbox"></i><a href="javascript:void(0);">Origin</a></label>
+
+              </div><?php */?>
+            </div>
+          </div>
+          <div class="visible-sm clearfix"></div>
+        </div>
+      </div>
+      <div class="advanced-search-filter" style="display: none;">
+        <div class="container in" id="listpage-filter">
+          <div class="row">
+            <div class="col-md-5 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 cut text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#cut">CUT</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt15 pb10">
+                    <div id="cut_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Cut"></div>
+                    <ul class="cut-slider-data">
+                      <li>EXCELLENT</li>
+                      <li>VERY<br class="visible-xs">
+                        GOOD</li>
+                      <li>GOOD</li>
+                      <li>FAIR</li>
+                    </ul>
+                    <input id="cuts" name="cuts" type="hidden" value="" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-md-3 col-sm-6 col-md-offset-2">
+              <dl class="mb0">
+                <dt class="h6 ratio text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#ratio">L:W RATIO</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt15 pb10">
+                    <div id="ratio_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamonds|Length To Width Ratio"></div>
+                    <div class="slider-data form-inline">
+                      <div class="form-group pull-left">
+                        <input id="min_ratio" name="min_ratio" type="text" class="form-control input-sm amount-min" />
+                      </div>
+                      <div class="form-group pull-right">
+                        <input id="max_ratio" name="max_ratio" type="text" class="form-control input-sm amount-max" />
+                      </div>
+                    </div>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 fluorescence text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#fluorescence">FLUORESCENCE</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt15 pb10">
+                    <div id="fluorescence_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Fluorescence"></div>
+                    <ul class="fluorescence-slider-data">
+                      <li>VERY<br class="visible-xs">
+                        STRONG</li>
+                      <li>STRONG</li>
+                      <li>MEDIUM</li>
+                      <li>FAINT</li>
+                      <li>NONE</li>
+                    </ul>
+                    <input id="fluorescences" name="fluorescences" type="hidden" value="" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+            <div id="report_div" class="col-md-3 col-sm-6 col-md-offset-2">
+              <dl>
+                <dt class="h6 text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#report">Certification</a></dt>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|GIA">
+                    <label><i class="icons-checkbox"></i>GIA</label>
+                    <input name="c_report" type="checkbox" value="GIA" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|HRD">
+                    <label><i class="icons-checkbox"></i>HRD</label>
+                    <input name="c_report" type="checkbox" value="HRD" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|EGL">
+                    <label><i class="icons-checkbox"></i>EGL</label>
+                    <input name="c_report" type="checkbox" value="EGL" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|IGI">
+                    <label><i class="icons-checkbox"></i>IGI</label>
+                    <input name="c_report" type="checkbox" value="IGI" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|EGL - USA">
+                    <label><i class="icons-checkbox"></i>EGL - USA</label>
+                    <input name="c_report" type="checkbox" value="EGL - USA" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|AGS">
+                    <label><i class="icons-checkbox"></i>AGS</label>
+                    <input name="c_report" type="checkbox" value="AGS" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|Non-Certified">
+                    <label><i class="icons-checkbox"></i>Non-Certified</label>
+                    <input name="c_report" type="checkbox" value="Non-Certified" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="control-hide">
+        <button id="adv_bar_collapser" type="button" class="btn btn-sm btn-success" style="background:black; color:#fff; border:0; display: none;">HIDE <i class="icons-chevron-up-white ico-r"></i></button>
+      </div>
+    </div>
+    <div class="your-search-results table-responsive">
+      <div id="similar_bar" class="row ysr-heading" style="display: none;">
+        <div class="col-md-8 col-sm-6"><span class="text-dark">SIMILAR DIAMONDS</span></div>
+      </div>
+      <div id="original_bar" class="row ysr-heading">
+        <div class="col-md-12 col-sm-12 reset-search" id = "similar_bar_link" style='display: none;'> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">RESET SEARCH</a><br>
+          <span id="original_link">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_original();">VIEW ORIGINAL DIAMONDS</a></span> </div>
+        <div class="col-md-12 col-sm-12 reset-search" id="orginal_bar_link"> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">RESET SEARCH</a><br>
+          <span id="similar_link" style="display: none;">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_similar();">VIEW SIMILAR DIAMONDS</a></span> </div>
+        <div class="col-md-12 col-sm-12 col-tabs">
+          <div class="ysr-tabs">
+            <ul class="nav nav-tabs">
+              <li class="active"><a data-toggle="tab" role="tab" id = 'tab_diamonds_search' style="cursor: default;"> <span>results (</span> <span id="totalResult">&nbsp;&nbsp;&nbsp;&nbsp;</span><span>)</span></a></li>
+              <li class=""><a data-toggle="tab" role="tab" id = 'tab_diamonds_recently_viewed' data-label="Loose Diamond|Search|Recently Viewed" data-action="Click" data-category="Tab" style="cursor: default;"><span>recently viewed (</span><span id="recently_viewed_totalResult">0</span><span>)</span></a></li>
+              <li class=""><a data-toggle="tab" role="tab" id = 'tab_diamonds_comparison' data-label="Loose Diamond|Search|Comparison" data-action="Click" data-category="Tab" style="cursor: default;"><span>compare (</span><span id="comparison_totalResult">0</span><span>)</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="search-nothing-tips mb50 pt20 hidden"> Unfortunately, no diamonds match your selected criteria. Please <a href='/contact/'>contact us</a> to speak to a diamond specialist to help you find the perfect diamond. </div>
+      <div class="cm-row" id="listContainer">
+        <div class="col-md-9">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="search-results-outline">
+            <thead>
+              <tr>
+                <th width="100%" scope="col"> <table id="search_result_header_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default">compare</a></span></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)" onclick="dtl.change_order_by('shape');">SHAPE</a></span><a href="javascript:void(0);"><i id="order_by_shape" class="icons-chevron-down" onclick="dtl.change_order_by('shape');"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);" onclick="dtl.change_order_by('carat');">CARAT</a></span><a href="javascript:void(0);"><i id="order_by_carat" class="icons-chevron-down" onclick="dtl.change_order_by('carat');"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)" onclick="dtl.change_order_by('color');">COLOR</a></span><a href="javascript:void(0);"><i id="order_by_color" class="icons-chevron-down" onclick="dtl.change_order_by('color');"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)" onclick="dtl.change_order_by('clarity');">CLARITY</a></span><a href="javascript:void(0);"><i id="order_by_clarity" class="icons-chevron-down" onclick="dtl.change_order_by('clarity');"></i></a></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)" onclick="dtl.change_order_by('cut');">CUT</a></span><a href="javascript:void(0);"><i id="order_by_cut" class="icons-chevron-down" onclick="dtl.change_order_by('cut');"></i></a></th>
+                                                
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)" onclick="dtl.change_order_by('fluorescence');">FLUOR</a></span><a href="javascript:void(0);"><i id="order_by_fluorescence" class="icons-chevron-down" onclick="dtl.change_order_by('fluorescence');"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)" onclick="dtl.change_order_by('l:w');">L:W</a></span><a href="javascript:void(0);"><i id="order_by_l_w" class="icons-chevron-down" onclick="dtl.change_order_by('l:w');"></i></a></th>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)" onclick="dtl.change_order_by('report');">REPORT</a></span><a href="javascript:void(0);"><i id="order_by_report" class="icons-chevron-down" onclick="dtl.change_order_by('report');"></i></a></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)" onclick="dtl.change_order_by('price');">PRICE</a></span><a href="javascript:void(0);"><i id="order_by_price" class="icons-chevron-up" onclick="dtl.change_order_by('price');"></i></a></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <table id="search_recently_header_table" style="display:none" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default">compare</a></span></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_shape').click();">SHAPE</a></span><a href="javascript:void(0);"><i id="r_order_by_shape" class="icons-chevron-down" onclick="new_change_order_by('shape', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);" onclick="jQuery('#r_order_by_carat').click();">CARAT</a></span><a href="javascript:void(0);"><i id="r_order_by_carat" class="icons-chevron-down" onclick="new_change_order_by('carat', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_color').click();">COLOR</a></span><a href="javascript:void(0);"><i id="r_order_by_color" class="icons-chevron-down" onclick="new_change_order_by('color', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_clarity').click();">CLARITY</a></span><a href="javascript:void(0);"><i id="r_order_by_clarity" class="icons-chevron-down" onclick="new_change_order_by('clarity', this);"></i></a></th>
+                        <th width="13%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_cut').click();">CUT</a></span><a href="javascript:void(0);"><i id="r_order_by_cut" class="icons-chevron-down" onclick="new_change_order_by('cut', this);"></i></a></th>
+                                                
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_fluorescence').click();">FLUOR</a></span><a href="javascript:void(0);"><i id="r_order_by_fluorescence" class="icons-chevron-down" onclick="new_change_order_by('fluorescence', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_l_w').click();">L:W</a></span><a href="javascript:void(0);"><i id="r_order_by_l_w" class="icons-chevron-down" onclick="new_change_order_by('l:w', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_report').click();">REPORT</a></span><a href="javascript:void(0);"><i id="r_order_by_report" class="icons-chevron-down" onclick="new_change_order_by('report', this);"></i></a></th>
+                                                
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)" onclick="jQuery('#r_order_by_price').click();">PRICE</a></span><a href="javascript:void(0);"><i id="r_order_by_price" class="icons-chevron-up" onclick="new_change_order_by('price', this);"></i></a></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <table id="search_comparison_header_table" style="display:none" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default">compare</a></span></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_price').click();">SHAPE</a></span><a href="javascript:void(0);"><i id="r_order_by_shape" class="icons-chevron-down" onclick="new_change_order_by('shape', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);" onclick="jQuery('#search_comparison_header_table #r_order_by_carat').click();">CARAT</a></span><a href="javascript:void(0);"><i id="r_order_by_carat" class="icons-chevron-down" onclick="new_change_order_by('carat', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_color').click();">COLOR</a></span><a href="javascript:void(0);"><i id="r_order_by_color" class="icons-chevron-down" onclick="new_change_order_by('color', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_clarity').click();">CLARITY</a></span><a href="javascript:void(0);"><i id="r_order_by_clarity" class="icons-chevron-down" onclick="new_change_order_by('clarity', this);"></i></a></th>
+                        <th width="13%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_cut').click();">CUT</a></span><a href="javascript:void(0);"><i id="r_order_by_cut" class="icons-chevron-down" onclick="new_change_order_by('cut', this);"></i></a></th>
+                                                
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_fluorescence').click();">FLUOR</a></span><a href="javascript:void(0);"><i id="r_order_by_fluorescence" class="icons-chevron-down" onclick="new_change_order_by('fluorescence', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_l_w').click();">L:W</a></span><a href="javascript:void(0);"><i id="r_order_by_l_w" class="icons-chevron-down" onclick="new_change_order_by('l:w', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_report').click();">REPORT</a></span><a href="javascript:void(0);"><i id="r_order_by_report" class="icons-chevron-down" onclick="new_change_order_by('report', this);"></i></a></th>
+                                                
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)" onclick="jQuery('#search_comparison_header_table #r_order_by_price').click();">PRICE</a></span><a href="javascript:void(0);"><i id="r_order_by_price" class="icons-chevron-up" onclick="new_change_order_by('price', this);"></i></a></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left" valign="top"><div id="search-scrollbar">
+                    <div class="loading hidden" style="height: 710px;" > <img src="<?php echo $this->getSkinUrl("css/image/ajax-loading.gif"); ?>" width="66" height="66" /> </div>
+                    <div id="result-scrollbar" class="scrollbar">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div id="recent-scrollbar" class="scrollbar" style="visibility:hidden;">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div id="cmp-scrollbar" class="scrollbar" style="visibility:hidden;">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_search_table' style="height: 710px;">
+                      <div class="overview">
+                        <table id="search_result_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_recently_viewed_table' style="height: 710px; display: none;">
+                      <div class="overview">
+                        <table id="recently_viewed_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_comparison_table' style="height: 710px; display: none;">
+                      <div class="overview">
+                        <table id="comparison_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-3">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="search-results-outline">
+            <thead>
+              <tr>
+                <th width="100%" scope="col" style="border-right:0;text-align:center;">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td valign="top"><div class="diamond-information">
+                    <div class="no-info"> <img src="<?php echo $this->getSkinUrl("css/image/no-info50x50.png"); ?>" />
+                      <p class="pt20">Hover over a diamond to see further details and shipping information.</p>
+                      <p class="pt20">Check the compare box to send multiple diamonds to the comparison tab.</p>
+                    </div>
+                    <div class="info container" id="diamond_info_panel" style="display: none; padding-top: 10px;"> </div>
+                  </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <input id="id_active_tab" type="hidden" value="None" />
+      <div id="errmsg"></div>
+    </div>
+  </div>
+</div>
+<style type="text/css">
+.dl-horizontal dt{width: 80px;}
+.dl-horizontal dd{margin-left: 90px;}
+</style>
+<?php /*?><div class="modal fade modal-type2" id="total-carat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Eternity Ring Carat Weight</h4>
+      </div>
+      <div class="modal-body">
+        <p>The ring size of an eternity ring determines its total carat weight. The total carat weight range reflects the difference in total carat weight between a size three and a size eight.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div><?php */?>
+<script type="text/javascript">
+
+  function refreshpage(url){
+
+    window.location.href= url;
+
+  }
+
+</script> 
+
+<!-- SITE BODY END -->
+
+<div class="standar h700" style="display:none;z-index:3008;border-width:2px;position:absolute;width:auto;height:auto;top:100px;left:230px;" id="refer_form">
+  <div style="display:none;" id="loading_refer" class="loading_preview"> <img src="<?php echo $this->getSkinUrl("css/image/ajax-loading.gif"); ?>" width="66" height="66" /> </div>
+  <div id="loading_content"></div>
+</div>
+<script type="text/javascript">
+
+// handle the modals popup on mobile & tablet
+
+  if("ontouchstart" in document) {
+
+    jQuery("body").append("<style type='text/css'>/* for mobile move bug */.modal-open{overflow:auto;}.modal{position:absolute;top:0;bottom:0;overflow:visible;}body.modal-open{margin-right:0;}</style> ")
+
+    jQuery(".modal-backdrop").on('click', function() {
+
+      jQuery(".modal.fade.in").modal('hide');
+
+    });
+
+  }
+
+</script> 

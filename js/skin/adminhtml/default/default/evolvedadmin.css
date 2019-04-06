@@ -1,0 +1,19 @@
+#evolved_tabs_evolved_header_content .form-list td.value
+{
+	width: 700px;
+}
+#evolved_form_navigation .form-list tr:nth-child(10) td.label,
+#evolved_form_navigation .form-list tr:nth-child(10) td.value
+{
+	border-bottom: 1px solid gray !important;
+	padding-bottom: 10px !important;
+}
+#evolved_form_navigation .form-list tr:nth-child(11) td.label,
+#evolved_form_navigation .form-list tr:nth-child(11) td.value
+{
+	padding-top: 15px !important;
+}
+
+#evolved_form_social input[name=social_icons_size] {
+    margin-right: 5px;
+}

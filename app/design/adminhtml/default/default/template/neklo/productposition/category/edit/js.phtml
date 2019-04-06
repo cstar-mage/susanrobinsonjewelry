@@ -1,0 +1,66 @@
+<?php /* @var $this Neklo_ProductPosition_Block_Adminhtml_Category_Edit_Js */ ?>
+<?php if ($this->canShow()): ?>
+<script>
+    var ajaxResponderHandler = new Object();
+    ajaxResponderHandler.onComplete = function(transport) {
+        if (
+            transport.url.indexOf('catalog_category/edit') !== -1
+            || transport.url.indexOf('catalog_category/grid') !== -1
+        ) {
+            $$('input[name=position]').invoke('writeAttribute', 'readonly');
+        }
+        if (transport.url.indexOf('catalog_category/grid') !== -1) {
+            restoreProductPosition();
+        }
+    };
+    Ajax.Responders.register(ajaxResponderHandler);
+
+    var updateProductPosition = function (productPosition) {
+        var categoryProductPositionInput = $('in_category_products');
+        if (categoryProductPositionInput) {
+            productPosition.each(function (position) {
+                categoryProducts.set(position.key, position.value);
+                var positionInput = getProductPositionInput(position.key);
+                if (positionInput) {
+                    positionInput.writeAttribute('readonly');
+                    positionInput.setValue(position.value);
+                    positionInput.simulate('keyup');
+                }
+            });
+            categoryProductPositionInput.setValue(productPosition.toQueryString());
+        }
+    };
+
+    var restoreProductPosition = function () {
+        categoryProducts.each(function (position) {
+            var positionInput = getProductPositionInput(position.key);
+            if (positionInput) {
+                positionInput.setValue(position.value);
+            }
+        });
+    };
+
+    var getProductPositionInput = function(productId) {
+        var productIdCheckbox = $$('#catalog_category_products_table tr td input[type=checkbox][value=' + productId + ']').first();
+        if (!productIdCheckbox) {
+            return null;
+        }
+        var tr = productIdCheckbox.up('tr');
+        if (!tr) {
+            return null;
+        }
+        var positionInput = tr.down('input[name=position]')
+        if (!positionInput) {
+            return null;
+        }
+        return positionInput;
+    };
+
+    var updateProductAttached = function (categoryProductAttached) {
+        var attachedProductsInput = $('attached_category_products');
+        if (attachedProductsInput) {
+            attachedProductsInput.setValue(categoryProductAttached.toQueryString());
+        }
+    };
+</script>
+<?php endif; ?>

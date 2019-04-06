@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <specialorder_adminhtml_specialorder_index>
+        <reference name="content">
+            <block type="specialorder/adminhtml_specialorder" name="specialorder" />
+        </reference>
+    </specialorder_adminhtml_specialorder_index>
+</layout>

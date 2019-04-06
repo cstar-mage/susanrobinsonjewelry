@@ -1,0 +1,71 @@
+
+            
+<div class="press">
+<div class="anne-gives-back">
+<div class="div-underline">&nbsp;</div>
+
+<span class="ho2_carry"><span class="underline"><span class="textpad1">&nbsp;</span><span class="textpad2">PRESS</span></span></span>
+<?php 
+	$collection = Mage::getModel('press/press')->getCollection()->setOrder("sort","ASC");	 	
+	
+	$i=0;
+	$j=1;
+	/*
+foreach($collection as $item)
+{
+?>
+<?php if($i==0 || $i%2 == 0){ ?>
+<div class="press_row">
+<?php } ?>
+	<?php if($j%2==0){?>
+	<div class="part2">
+	<?php } else {?>
+	<div class="part1">
+	<?php } ?>
+	<img <?php if($j%2==0){?>id="myimage"<?php } ?>src="<?php echo Mage::getBaseUrl();?>media/press/<?php echo $item->getFilename(); ?>" alt="" />
+	<span class="press_content1"><?php echo $item->getTitle();?></span>
+	<span class="press_content2"><?php echo $item->getContent();?></span>
+		<span class="small_border">
+			<img src="<?php echo Mage::getBaseUrl();?>media/wysiwyg/small_border.png" alt="" />
+		</span>
+	</div>
+<?php if($j%2==0){?>
+</div>
+<?php } ?>  
+<?php $i++; $j++;?>
+<?php }  */ ?> 
+<div class="press_row">
+	<ul>
+<?php 
+$i=0;
+foreach($collection as $item)
+{  
+	//echo $item->getSort();
+	?>
+	<?php if($i % 2 == 1) {?> 
+	<li>
+	<a href="<?php echo $item->getUrl();?>"><img src="<?php echo Mage::getBaseUrl();?>media/press/<?php echo $item->getFilename(); ?>" alt="" /></a>
+	<span class="press_content1"><?php echo $item->getTitle();?></span>
+	<span class="press_content2"><?php echo $item->getContent();?></span>
+		<span class="small_border">
+			<img src="<?php echo Mage::getBaseUrl();?>media/wysiwyg/small_border.png" alt="" />
+		</span>
+	</li>	
+	<?php }  else { ?>
+	<li class="clearboth">
+	<a href="<?php echo $item->getUrl();?>"><img src="<?php echo Mage::getBaseUrl();?>media/press/<?php echo $item->getFilename(); ?>" alt="" /></a>
+	<span class="press_content1"><?php echo $item->getTitle();?></span>
+	<span class="press_content2"><?php echo $item->getContent();?></span>
+		<span class="small_border">
+			<img src="<?php echo Mage::getBaseUrl();?>media/wysiwyg/small_border.png" alt="" />
+		</span>
+	</li>		
+		
+	<?php } ?>
+		
+		
+	
+<?php $i++; }  ?>
+</ul>
+</div>
+ </div>

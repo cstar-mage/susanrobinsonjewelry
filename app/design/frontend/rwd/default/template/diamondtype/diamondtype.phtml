@@ -1,0 +1,443 @@
+<!--  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script> -->
+  <!-- <script src="<?php //echo $this->getSkinUrl()."diamondtype/js/jquery-ui.js"; ?>"></script>  -->
+    <script>
+    	function diamondtypeshapeselectfn(shapeid)
+    	{
+        	//alert(shapeid);
+        	if(jQuery(".diamondtype-shape-content #"+shapeid).is(':checked'))
+        	{
+            	jQuery(".diamondtype-shape-content #"+shapeid).prop('checked', false);
+            	jQuery(".diamondtype-shape-content ."+shapeid+" .select").css("display","none");
+            	jQuery(".diamondtype-shape-content ."+shapeid+" .deselect").css("display","block");
+            	jQuery(".diamondtype-shape-content ."+shapeid+" span").css("color","#636363");
+        	}
+        	else
+        	{
+            	jQuery(".diamondtype-shape-content #"+shapeid).prop('checked', true);
+            	jQuery(".diamondtype-shape-content ."+shapeid+" .select").css("display","block");
+            	jQuery(".diamondtype-shape-content ."+shapeid+" .deselect").css("display","none");
+            	jQuery(".diamondtype-shape-content ."+shapeid+" span").css("color","#E1B986");
+        	}
+    	}
+	 	  jQuery(function() {
+		    jQuery( "#diamondtype-carat-range" ).slider({
+		      range: true,
+		      min: 0,
+		      max: 1000,
+		      values: [ 0, 1000 ],
+		      slide: function( event, ui ) {
+		    	 	//console.log((ui.values[ 0 ]/100));
+					//jQuery("#min-carat-range-box").val((ui.values[ 0 ]/100));
+					jQuery("#min-carat-range-box").attr('value', (ui.values[ 0 ]/100));
+					jQuery("#max-carat-range-box").attr('value', (ui.values[ 1 ]/100));
+					//console.log("min : " + ui.values[ 0 ] + " max : " + ui.values[ 1 ]);
+		      }
+		    });
+
+		    jQuery( "#diamondtype-price-range" ).slider({
+			      range: true,
+			      min: 1000,
+			      max: 5000000,
+			      values: [ 0, 5000000 ],
+			      slide: function( event, ui ) {
+			    	 	//console.log((ui.values[ 0 ]/100));
+			    	 	jQuery("#min-price-range-box").attr('value', "$" + ui.values[ 0 ]);
+			    	 	jQuery("#max-price-range-box").attr('value', "$" + ui.values[ 1 ]);
+						//jQuery("#min-price-range-box").val("$" + ui.values[ 0 ]);
+						//jQuery("#max-price-range-box").val("$" + ui.values[ 1 ]);
+						//console.log("min : " + ui.values[ 0 ] + " max : " + ui.values[ 1 ]);
+			      }
+			    });
+		    
+		  });
+
+		  jQuery(document).ready(function(){
+			  jQuery(".diamondtype-color-checkbox-other").click(function(){
+				  if(jQuery(this).is(':checked'))
+				  {
+					  jQuery(".diamondtype-color-content ul").append('<li class="diamondtype-color-other-li"><span><input type="text" value="" name="diamondtype-color-checkbox[]" id="diamondtype-color-other-box"></span></li>');
+				  }
+				  else
+				  {
+					  jQuery(".diamondtype-color-other-li").remove();
+				  }
+			  });
+
+			  jQuery(".diamondtype-lab-checkbox-other-check").click(function(){
+				  if(jQuery(this).is(':checked'))
+				  {
+					  jQuery(".diamondtype-lab-content ul").append('<li class="diamondtype-lab-checkbox-other-li"><input type="text" name="diamondtype-lab-checkbox[]" class="diamondtype-lab-checkbox-other" value="" /></li>');
+				  }
+				  else
+				  {
+					  jQuery(".diamondtype-lab-checkbox-other-li").remove();
+				  }
+			  });
+		  });
+  </script>
+
+<?php  $diamondtypecollection = Mage::getModel('diamondtype/diamondtype')->getCollection();
+//echo "<pre>"; print_r($diamondtypecollection->getData());
+?>
+<form name="diamondtype-form-info" action="http://localhost/magento1911/index.php/diamondtype/index/save" method="post" >
+<div class="main-diamondtype">
+	<div Class="main-diamondtype-title">
+		<span class="title">Loose Diamondtype Request Form</span>
+	</div>
+	<div class="main-content">
+			<div class="main-diamondtype-type diamondtype-description">
+				<div Class="diamondtype-type-title main-title">
+					<span class="title">Diamondtype Type:</span>
+					<span class="sub-title">Select the diamondtype type you'd like to request</span>
+				</div>
+				<div class="diamondtype-type-content">
+				<?php 
+					if(Mage::registry('current_category'))
+					{
+						$categoryname = Mage::registry('current_category')->getName();
+					}
+					$diamondtypetype = array('Ruby','Sapphire','Emerald','Other');
+				?>
+				<input type="hidden" name="diamondtype-type-box" value="<?php echo $categoryname; ?>" />
+				<?php foreach($diamondtypetype as $diamondtypetype1): ?>
+						<?php if($categoryname == $diamondtypetype1): ?>
+								<span class="content active"><?php echo $diamondtypetype1; ?></span>
+						<?php else: ?>
+								<span class="content"><?php echo $diamondtypetype1; ?></span>
+						<?php endif; ?>
+				<?php endforeach; ?>
+
+				</div>
+			</div>
+
+			<div class="main-diamondtype-shape diamondtype-description">
+				<div Class="diamondtype-shape-title main-title">
+					<span class="title">Shape:</span>
+					<span class="sub-title">select one or more diamondtype shapes</span>
+				</div>
+				<div class="diamondtype-shape-content">
+					<ul>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-round" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-round')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/round.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/round_h.png" style="display:none;" />
+								<span>round</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-round" value="round" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-emerald" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-emerald')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/emerald.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/emerald_h.png" style="display:none;" />
+								<span>emerald</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-emerald" value="emerald" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-oval" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-oval')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/oval.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/oval_h.png" style="display:none;" />
+								<span>oval</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-oval" value="oval" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-marquise" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-marquise')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/marquise.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/marquise_h.png" style="display:none;" />
+								<span>marquise</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-marquise" value="marquise" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-pear" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-pear')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/pear.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/pear_h.png" style="display:none;" />
+								<span>pear</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-pear" value="pear" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-princess" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-princess')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/princess.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/princess_h.png" style="display:none;" />
+								<span>princess</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-princess" value="princess" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-radient" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-radient')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/radient.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/radient_h.png" style="display:none;" />
+								<span>radient</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-radient" value="radient" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-asscher" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-asscher')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/asscher.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/asscher_h.png" style="display:none;" />
+								<span>asscher</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-asscher" value="asscher" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-baguette" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-baguette')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/boguette.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/boguette_h.png" style="display:none;" />
+								<span>baguette</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-baguette" value="baguette" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-heart" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-heart')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/heart.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/heart_h.png" style="display:none;" />
+								<span>heart</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-heart" value="heart" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-cushion" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-cushion')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/cushion.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/cushion_h.png" style="display:none;" />
+								<span>cushion</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-cushion" value="cushion" />
+							</a>
+						</li>
+						<li>
+							<a href="javascript:" class="diamondtype-shape-checkbox-other" onClick="diamondtypeshapeselectfn('diamondtype-shape-checkbox-other')">
+								<img class="deselect" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/other.png" />
+								<img class="select" src="<?php echo $this->getSkinUrl(); ?>diamondtype/images/other_h.png" style="display:none;" />
+								<span>other</span>
+								<input type="checkbox" name="diamondtype-shape-checkbox[]" class="diamondtype-shape-checkbox" id="diamondtype-shape-checkbox-other" value="other" />
+							</a>
+						</li>		
+					</ul>
+				</div>
+			</div>
+			<div class="diamondtype-description left">
+				<div class="main-diamondtype-color diamondtype-description">
+					<div Class="diamondtype-color-title main-title">
+						<span class="title">Color:</span>
+						<span class="sub-title">select one or more diamondtype color</span>
+					</div>
+					<div class="diamondtype-color-content">
+						<ul>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="red" />
+									<span>red</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="blue" />
+									<span>blue</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="green" />
+									<span>green</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="orange" />
+									<span>orange</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="brown" />
+									<span>brown</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="colorless" />
+									<span>colorless</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="black" />
+									<span>black</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="pink" />
+									<span>pink</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="purple" />
+									<span>purple</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox[]" value="golden" />
+									<span>golden</span>
+							</li>
+							<li>
+									<input type="checkbox" name="diamondtype-color-checkbox-other" value="other" class="diamondtype-color-checkbox-other" />
+									<span>other</span>
+							</li>
+							<!-- 
+							<li>
+									<span><input type="text" id="diamondtype-color-other-box" name="diamondtype-color-checkbox[]" value="" /></span>
+							</li>
+							 -->	
+						</ul>
+					</div>
+				</div>
+				
+				<div class="main-diamondtype-dimensions diamondtype-description">
+					<div Class="diamondtype-dimensions-title main-title">
+						<span class="title">Dimensions:</span>
+					</div>
+					<div class="diamondtype-dimensions-content">
+						<ul>
+							<li>
+								<input type="text" name="diamondtype-dimensions-text[lenght]" value="" /><span class="comment-label">mm</span>
+								<span class="label">lenght</span>
+							</li>
+							<li>
+								<input type="text" name="diamondtype-dimensions-text[width]" value="" /><span class="comment-label">mm</span>
+								<span class="label">width</span>
+							</li>
+							<li>
+								<input type="text" name="diamondtype-dimensions-text[depth]" value="" /><span class="comment-label">mm</span>
+								<span class="label">depth</span>
+							</li>
+							<li>
+								<input type="text" name="diamondtype-dimensions-text[plus-minus]" value="" /><span class="comment-label">mm</span>
+								<span class="label">plus-minus</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="diamondtype-description right">
+				<div class="main-diamondtype-carat diamondtype-description">
+					<div Class="diamondtype-carat-title main-title">
+					<span class="title">carat:</span>
+					</div>
+					<div class="diamondtype-carat-content">
+						<div class="carat-range-slider">
+							<div id="diamondtype-carat-range"></div>
+						</div>
+						<div id="min-carat-range">
+							<input type="text" id="min-carat-range-box" name="min-carat-range-box" value="" />
+								<span>minimum</span>
+						</div>
+						<div id="max-carat-range">
+							<span>maximum</span>
+							<input type="text" id="max-carat-range-box" name="max-carat-range-box" value="" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="main-diamondtype-price diamondtype-description">
+					<div Class="diamondtype-price-title main-title">
+					<span class="title">Price:</span>
+						<div class="price-type">
+							<div class="diamondtype-price-type-input">
+								<input type="radio" name="diamondtype-price-type" value="total price" /><span>total price</span>
+							</div>
+							<div class="diamondtype-price-type-input">
+								<input type="radio" name="diamondtype-price-type" value="per carat" /><span>per carat</span>
+							</div>
+						</div>
+					</div>
+					<div class="diamondtype-price-content">
+						<div class="price-range-slider">
+							<div id="diamondtype-price-range"></div>
+						</div>
+						<div id="min-price-range">
+							<input type="text" id="min-price-range-box" name="min-price-range-box" value="" />
+								<span>minimum</span>
+						</div>
+						<div id="max-price-range">
+							<span>maximum</span>
+							<input type="text" id="max-price-range-box" name="max-price-range-box" value="" />
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			
+			
+			<div class="main-diamondtype-lab diamondtype-description">
+				<div Class="diamondtype-lab-title main-title">
+					<span class="title">lab:</span>
+				</div>
+				<div class="diamondtype-lab-content">
+					<ul>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="gia" />
+								<span>gia</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="gubelin" />
+								<span>gubelin</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="agl" />
+								<span>agl</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="pgs" />
+								<span>pgs</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="agta" />
+								<span>agta</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="grs" />
+								<span>grs</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="egl" />
+								<span>egl</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox[]" value="ugs" />
+								<span>ugs</span>
+						</li>
+						<li>
+								<input type="checkbox" name="diamondtype-lab-checkbox-other" value="other" class="diamondtype-lab-checkbox-other-check" />
+								<span>other:</span>
+								<!-- <input type="text" name="diamondtype-lab-checkbox[]" class="diamondtype-lab-checkbox-other" value="" />  -->
+						</li>
+
+					</ul>
+				</div>
+			</div>
+
+			<div class="main-diamondtype-comment diamondtype-description">
+				<div Class="diamondtype-comment-title main-title">
+					<span class="title">comments & details:</span>
+				</div>
+				<div class="diamondtype-comment-content">
+					<textarea name="diamondtype-comment-box" id="diamondtype-comment-box"></textarea>
+				</div>
+			</div>
+			
+			<div class="main-diamondtype-contact diamondtype-description">
+				<div Class="diamondtype-contact-title main-title">
+					<span class="title">Contact Information:</span>
+				</div>
+				<div class="diamondtype-contact-content">
+					<div class="diamondtype-contact-info" id="diamondtype-contact-firstname-info">
+						<input type="text" id="diamondtype-contact-firstname-box" name="diamondtype-contact-firstname-box" value="" />
+						<span>First Name</span>
+					</div>
+					<div class="diamondtype-contact-info" id="diamondtype-contact-lastname-info">
+						<input type="text" id="diamondtype-contact-lastname-box" name="diamondtype-contact-lastname-box" value="" />
+						<span>Last Name</span>
+					</div>
+					<div class="diamondtype-contact-info" id="diamondtype-contact-phoneno-info">
+						<input type="text" id="diamondtype-contact-phoneno-box" name="diamondtype-contact-phoneno-box" value="" />
+						<span>phone number</span>
+					</div>
+					<div class="diamondtype-contact-info" id="diamondtype-contact-emailid-info">
+						<input type="text" id="diamondtype-contact-emailid-box" name="diamondtype-contact-emailid-box" value="" />
+						<span>email</span>
+					</div>
+					<div class="diamondtype-contact-info" id="diamondtype-contact-button-info">
+						<input type="submit" id="diamondtype-contact-button-box" name="diamondtype-contact-button-box" value="Submit" />
+					</div>
+				</div>
+			</div>
+
+	</div>
+</div>
+</form>

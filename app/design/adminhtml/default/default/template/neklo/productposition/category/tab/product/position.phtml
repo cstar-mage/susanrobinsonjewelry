@@ -1,0 +1,69 @@
+<?php /* @var $this Neklo_ProductPosition_Block_Adminhtml_Category_Tab_Product_Position */ ?>
+
+<div id="neklo-sorter"></div>
+<input id="attached_category_products" type="hidden" name="attached_category_products" value=""/>
+
+<script type="text/javascript">
+    var categoryProductPosition = $H(<?php echo $this->getSortedProductsPositionJson(); ?>);
+    var categoryProductAttached = $H(<?php echo $this->getAttachedProductsJson(); ?>);
+    var sorterOnItemsChangedCallback = function (data) {
+        data.each(
+            function (productPosition) {
+                categoryProductPosition.set(productPosition.entity_id, productPosition.position);
+                categoryProductAttached.set(productPosition.entity_id, productPosition.attached==='true'?1:0);
+            }
+        );
+        updateProductPosition(categoryProductPosition);
+        updateProductAttached(categoryProductAttached);
+    };
+    setTimeout(
+        function () {
+            updateProductPosition(categoryProductPosition);
+            updateProductAttached(categoryProductAttached);
+        },
+        26
+    );
+
+    var httpOptions = {
+        url: '<?php echo $this->getUrl('adminhtml/neklo_productposition_ajax/page', array('id' => Mage::registry('current_category')->getId())); ?>'
+    };
+    var options = {
+        connector: new NEKLO.Connectors.Magento1Connector(httpOptions),
+        targetDOM: document.querySelector('#neklo-sorter'),
+        grid: {
+            cols: <?php echo $this->getConfig()->getColumnCount(); ?>,
+            rows: <?php echo $this->getConfig()->getRowCount(); ?>
+        },
+        uploadButton: {
+            label: '<?php echo $this->__('Upload Next Page'); ?>'
+        },
+        error: {
+            message: '<?php echo $this->__('Empty data'); ?>'
+        },
+        item: {
+            template: document.getElementById('template-item').innerHTML
+        },
+        separator: {
+            template: document.getElementById('template-separator').innerHTML
+        },
+        totalItems: <?php echo $this->getCollectionSize(); ?>
+    };
+
+    if (window.category_info_tabsJsTabs && category_info_tabsJsTabs.activeTab.getAttribute('id') === 'category_info_tabs_neklo_productposition') {
+        sorter = new NEKLO.ProductSorter(options);
+        sorter.on(sorter.EVENTS.ON_ITEMS_CHANGED, sorterOnItemsChangedCallback);
+    } else if ($('category_info_tabs_neklo_productposition')) {
+        $('category_info_tabs_neklo_productposition').observe('click', function () {
+            if ($('category_info_tabs_neklo_productposition').init_complete) {
+                return;
+            }
+            sorter = new NEKLO.ProductSorter(options);
+            sorter.on(sorter.EVENTS.ON_ITEMS_CHANGED, sorterOnItemsChangedCallback);
+            $('category_info_tabs_neklo_productposition').init_complete = true;
+        })
+    }
+
+    document.addEventListener('DOMContentLoaded', function (e) {
+        window.dnd_page_scroll();
+    });
+</script>

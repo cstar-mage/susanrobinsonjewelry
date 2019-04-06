@@ -1,0 +1,120 @@
+<?php
+/**
+ * Custom
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Custom
+ * @package    Message_Contactform
+ * @author     Custom Development Team
+ * @copyright  Copyright (c) 2013 Custom. (http://www.magerevol.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php
+ */
+
+require_once 'Mage/Contacts/controllers/IndexController.php';
+class Message_Contactform_IndexController extends Mage_Contacts_IndexController
+{
+ 
+	const XML_PATH_EMAIL_RECIPIENT  = 'contacts/email/recipient_email';
+	const XML_PATH_EMAIL_SENDER     = 'contacts/email/sender_email_identity';
+	const XML_PATH_EMAIL_TEMPLATE   = 'contacts/email/email_template';
+	const XML_PATH_ENABLED          = 'contacts/contacts/enabled';
+	
+ public function postAction()
+    {
+	
+        if ($data = $this->getRequest()->getPost()) {
+        	 	$post = $this->getRequest()->getPost();
+        		$postObject = new Varien_Object();
+        		$postObject->setData($post);
+        		$error = false;
+        		
+        		if (!Zend_Validate::is(trim($post['name']) , 'NotEmpty')) {
+        			$error = true;
+        		}
+        		
+        		if (!Zend_Validate::is(trim($post['comment']) , 'NotEmpty')) {
+        			$error = true;
+        		}
+        		
+        		if (!Zend_Validate::is(trim($post['email']), 'EmailAddress')) {
+        			$error = true;
+        		}
+        		
+        		/*if (Zend_Validate::is(trim($post['hideit']), 'NotEmpty')) {
+        			$error = true;
+        		}*/
+        		
+        		if ($error) {
+        			throw new Exception();
+        		}
+        		
+               	$model = Mage::getModel('contactform/contactform');		
+			    $model->setData($data)
+				->setId($this->getRequest()->getParam('id'));
+            try {
+                    $model->setCreatedTime(now());
+					$model->setTelephone("".$_POST['telephone']."");
+					//$model->save();
+					$mailTemplate = Mage::getModel('core/email_template');
+					/* @var $mailTemplate Mage_Core_Model_Email_Template */
+					$mailTemplate->setDesignConfig(array('area' => 'frontend'))
+					->setReplyTo($post['email'])
+					->sendTransactionalnew(
+							Mage::getStoreConfig(self::XML_PATH_EMAIL_TEMPLATE),
+							Mage::getStoreConfig(self::XML_PATH_EMAIL_SENDER),
+						   Mage::getStoreConfig(self::XML_PATH_EMAIL_RECIPIENT),
+							$post['name'],
+							array('data' => $postObject),
+							$post['email']
+					);		
+					
+					$mailTemplate->setDesignConfig(array('area' => 'frontend'))
+					->setReplyTo(Mage::getStoreConfig(self::XML_PATH_EMAIL_RECIPIENT))
+					->sendTransactional(
+							'contact_form_email_confirm',
+							Mage::getStoreConfig(self::XML_PATH_EMAIL_SENDER),
+							$_POST['email'],
+							null,
+							null
+					);
+					
+					/*$mailTemplate->setDesignConfig(array('area' => 'frontend'))
+					->setReplyTo(Mage::getStoreConfig(self::XML_PATH_EMAIL_RECIPIENT))
+					->sendTransactional(
+							Mage::getStoreConfig(self::XML_PATH_EMAIL_TEMPLATE),
+							Mage::getStoreConfig(self::XML_PATH_EMAIL_SENDER),
+							$_POST['email'],
+							null,
+							array('data' => $postObject)
+					);*/
+					
+					if (!$mailTemplate->getSentSuccess()) {
+						throw new Exception();
+					}
+					$success_message = Mage::getStoreConfig('contactform/general/success_message');
+					Mage::getSingleton('core/session')->addSuccess(Mage::helper('contactform')->__('Message was successfully sent'));
+					$this->_redirect('*/*/');
+					return;
+					
+                } catch (Exception $e) {
+//                   Mage::getSingleton('core/session')->addError(Mage::helper('contactform')->__('Unable to send message.'));
+       				 $this->_redirectReferer();
+       				 return;
+                }
+           
+//
+
+           
+            
+        }
+        	Mage::getSingleton('core/session')->addError(Mage::helper('contactform')->__('Unable to send message.'));
+       		$this->_redirectReferer();
+            
+    }    
+}

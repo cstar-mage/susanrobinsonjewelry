@@ -1,0 +1,40 @@
+<?php
+	$googleFontEnable = (Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_enable_googlefont")) ? Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_enable_googlefont") : "";
+	$googleFont = (Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_all")) ? Mage::getStoreConfig("diamondsearch/general_settings/diamond_fonts_all") : "Economica";
+	
+	$csstxt = "";
+	
+	if($googleFontEnable == 1)
+	{
+		$csstxt .= "<style type='text/css'>";
+		if($googleFont != ''){
+			$csstxt .="@import url(//fonts.googleapis.com/css?family=" . str_replace ( " ", "+", $googleFont ) . "); ";
+			
+			$csstxt .=".ds-container,.ds-container table th, .ds-container table td,ul.dsearch-main-tabs li .badge,.ds-container label,.ds-container table,
+						.slider_values span,.diamondsearch-index-index button, .diamondsearch-index-index input, .diamondsearch-index-index select,
+						 .diamondsearch-index-index table, .diamondsearch-index-index textarea, .diamondsearch-index-index a.adv_search_lnk,
+						.ds-container .h1,.ds-container .h2,.ds-container .h3,.ds-container .h4,.ds-container .h5,.ds-container .h6,
+			           .ds-container h1,.ds-container h2,.ds-container h3,.ds-container h4,.ds-container h5,.ds-container h6,.diamondsearch-index-index .slider_values span,.advanced-search .heading-wrapper .heading span {font-family: ".$googleFont." !important}";
+			$csstxt .=".ds-container b,.ds-container strong ,.viewdetails .list-group-item > .badge,
+					.ds-container .grid-view .item .info {font-family: ".$googleFont." !important;font-weight: bold !important}";
+			
+		}
+		$csstxt .= "</style>";
+	}else{
+		/*
+		$csstxt .= "<style type='text/css'>";
+		$csstxt .="@import url(//fonts.googleapis.com/css?family=Economica";
+		
+		$csstxt .=".ds-container,.ds-container table th, .ds-container table td,ul.dsearch-main-tabs li .badge,.ds-container label,.ds-container table,
+					.slider_values span,.diamondsearch-index-index button, .diamondsearch-index-index input, .diamondsearch-index-index select,
+					 .diamondsearch-index-index table, .diamondsearch-index-index textarea, .diamondsearch-index-index a.adv_search_lnk,
+					.ds-container .h1,.ds-container .h2,.ds-container .h3,.ds-container .h4,.ds-container .h5,.ds-container .h6,
+				   .ds-container h1,.ds-container h2,.ds-container h3,.ds-container h4,.ds-container h5,.ds-container h6 {font-family: Economica !important}";
+		$csstxt .=".ds-container b,.ds-container strong ,.viewdetails .list-group-item > .badge,
+				.ds-container .grid-view .item .info {font-family: Economica !important;font-weight: bold !important}";
+		
+		$csstxt .= "</style>";
+		*/
+	}
+	echo $csstxt;
+?>

@@ -1,0 +1,1647 @@
+<script>
+
+	var dataLayer = dataLayer || [];
+
+    dataLayer.push({ "pageGroup" : "Listing pages" });
+
+    var content_group = '';
+
+</script>
+<link href="<?php echo $this->getSkinUrl("css/dsearch/global-mini.css") ?>" rel="stylesheet">
+<link href="<?php echo $this->getSkinUrl("css/dsearch/valentines-day2015.css") ?>" rel="stylesheet">
+<?php /*?><script src="<?php echo $this->getJsUrl("dsearch/global-mini.js") ?>"></script><?php */?>
+<script type="text/javascript">
+
+	var pr_style_sheet = '<?php echo $this->getSkinUrl("css/dsearch/express.css") ?>';
+
+	var is_mobile = false;
+
+	var is_ipad = false;
+
+	var currency_symbol = '$';
+
+	var canada_country = false;
+
+	var australia_country = false;
+
+	set_version_to_cookie('india', 'USD', 'False', 'False');
+
+</script>
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("css/dsearch/scrollbar.css") ?>" />
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("css/dsearch/jquery.nouislider.css") ?>" />
+<link rel="stylesheet" href="<?php echo $this->getSkinUrl("css/dsearch/bootstrap-select.css") ?>" />
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.tinyscrollbar.min.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/jquery.nouislider.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/bootstrap-select.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/json2.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/search_diamond.js") ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getJsUrl("dsearch/new_tab_diamond_result_table.js") ?>"></script>
+<script type="text/javascript">
+
+  var MIN_PRICE = '', MAX_PRICE = '', MIN_CARAT = '', MAX_CARAT = '';
+
+  //var shape_ranges = {"Asscher": [1840, 102370, 0.54, 6.0], "Heart": [950, 552690, 0.31, 5.73], "Radiant": [990, 125520, 0.3, 7.02], "Marquise": [580, 126060, 0.26, 3.02], "Pear": [550, 178390, 0.25, 6.2], "Princess": [490, 259400, 0.25, 10.2], "Cushion": [780, 422570, 0.31, 10.18], "Emerald": [550, 431940, 0.28, 10.37], "Oval": [570, 226620, 0.3, 5.06], "Round": [610, 872890, 0.25, 14.08]};
+  
+  var shape_ranges = <?php echo Mage::helper("diamondsearch")->getShapeRangesJson(); ?>;
+
+  var curr_symbol = '<?php echo Mage::app()->getLocale()->currency( $currency_code )->getSymbol(); ?>';
+
+  var collection_params = [];
+
+  var origin_params = [];
+
+  var report_params = [];
+
+  var view_link = "<?php echo $this->getUrl("diamondsearch/index/view")."id/" ?>";
+
+  var search_path = "/loose-diamonds/search/";
+
+  var stock_number_params =  ["all"];
+
+  var _shapes = '';
+
+  if (_shapes == "") {
+    _shapes = "Round";
+  }
+
+  jQuery(document).ready(function() {
+      jQuery('.selectpicker').selectpicker();
+
+    if ( 'ontouchstart' in window ) {
+
+      jQuery('.product-shape li a').hover(function(){
+
+        jQuery(this).click();
+
+        this.stopPropagation();
+
+      }, function() {});
+
+    } else {
+
+      // Don't show popover for tablet.
+
+      jQuery('.collection-hint').popover();
+
+    }
+
+
+
+    var sp_str = reset_diamonds_search_params();
+
+    // var sp_str = jQuery.cookie('search_params'+jQuery.trim('$'));
+
+    var prev_curr = jQuery.cookie('search_curr');
+
+    var sp_dict = undefined;
+
+
+
+    if (sp_str) {
+
+      try {
+
+        sp_dict = jQuery.parseJSON(sp_str, true);
+
+      } catch(e) {
+
+        sp_dict = undefined;
+
+      }
+
+    }
+
+
+
+    if (sp_dict != undefined) {
+
+      MIN_PRICE = sp_dict.MIN_PRICE;
+
+      MAX_PRICE = sp_dict.MAX_PRICE;
+
+      MIN_CARAT = sp_dict.MIN_CARAT;
+
+      MAX_CARAT = sp_dict.MAX_CARAT;
+
+
+
+      if ('' === '' && sp_dict.shapes != undefined) {
+
+        _shapes = sp_dict.shapes;
+
+      }
+
+
+
+      if (origin_params.length == 0 && sp_dict.origins) {
+
+        var _t = '["'+sp_dict.origins+'"]';
+
+        origin_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+
+      }
+
+      if (collection_params.length == 0  && sp_dict.collections) {
+
+        var _t = '["'+sp_dict.collections+'"]';
+
+        collection_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+
+      }
+
+      if (report_params.length == 0  && sp_dict.reports) {
+
+        var _t = '["'+sp_dict.reports+'"]';
+
+        report_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+
+      }
+
+      if (sp_dict.stock_number) {
+
+        var _t = '["'+sp_dict.stock_number+'"]';
+
+        stock_number_params = jQuery.parseJSON(_t.replace(/\,/g, '","'));
+
+      }
+
+      var ratio_min_value = 1.00, ratio_max_value = 2.75;
+
+      if (sp_dict.min_ratio != undefined) { ratio_min_value = sp_dict.min_ratio; }
+
+      if (sp_dict.max_ratio != undefined) { ratio_max_value = sp_dict.max_ratio; }
+
+
+
+      init_search_panel(
+
+        _shapes,
+
+        sp_dict.cuts,
+
+        sp_dict.colors,
+
+        sp_dict.clarities,
+
+		sp_dict.fluorescences,
+
+        sp_dict.min_carat,
+
+        sp_dict.max_carat,
+
+        sp_dict.min_price,
+
+        sp_dict.max_price,
+
+        ratio_min_value,
+
+        ratio_max_value,
+
+        collection_params,
+
+        origin_params,
+
+        report_params,
+
+        stock_number_params
+
+      );
+
+      dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', sp_dict.row, sp_dict.order_by,
+
+        sp_dict.order_method, 100, view_link, search_path);
+
+    } else {
+
+      init_search_panel(
+
+        _shapes,
+
+        "",
+
+        "",
+
+        "",
+
+		"",
+
+        "0.25",
+
+        "14.08",
+
+        "610",
+
+        "872890",
+
+        "0.00",
+
+        "0.00",
+
+        collection_params,
+
+        origin_params,
+
+        report_params,
+
+        stock_number_params
+
+      );
+
+	  
+
+      dtl.init('Loose Diamonds', '$', 1, 'CONFLICT FREE DIAMONDS', 0, 'price',
+
+        'asc', 100, view_link, search_path);
+
+    }
+
+
+
+    dtl.fetch_result();
+
+    init_status = setInterval(function() {
+
+
+
+      if (dtl.lastAjax && dtl.lastAjax.status !== undefined) {
+
+        fetch_recently_viewed_result();
+
+        init_comparson();
+
+        clearInterval(init_status);
+
+      }
+
+    }, 200);
+
+
+
+    jQuery('#tab_diamonds_search').click(function(){
+
+      if (dtl.total_count === 0 && is_similar_show == 'N'){
+
+        jQuery('#listContainer').addClass('hidden');
+
+        jQuery('.search-nothing-tips').removeClass('hidden');
+
+        jQuery('.search-nothing-tips').show();
+
+      }
+
+      else{
+
+        jQuery('.search-nothing-tips').addClass('hidden');
+
+        jQuery('#listContainer').removeClass('hidden');
+
+      }
+
+      jQuery('.scrollbar').css('visibility', 'hidden');
+
+      jQuery('#result-scrollbar').css('visibility','visible');
+
+      jQuery('#search_recently_header_table').css('display', 'none');
+
+      jQuery('#search_comparison_header_table').css('display', 'none');
+
+      jQuery('#search_result_header_table').css('display', 'block');
+
+      jQuery('#diamonds_recently_viewed_table').css('display','none');
+
+      jQuery('#diamonds_comparison_table').css('display','none');
+
+      jQuery('#diamonds_search_table').css('display','block');
+
+    });
+
+    jQuery('#tab_diamonds_recently_viewed').click(function(){
+
+      jQuery('.search-nothing-tips').addClass('hidden');
+
+      jQuery('#listContainer').removeClass('hidden');
+
+      jQuery('.scrollbar').css('visibility', 'hidden');
+
+      jQuery('#recent-scrollbar').css('visibility','visible');
+
+      jQuery('#search_recently_header_table').css('display', 'block');
+
+      jQuery('#search_comparison_header_table').css('display', 'none');
+
+      jQuery('#search_result_header_table').css('display', 'none');
+
+      jQuery('#diamonds_recently_viewed_table').css('display','block');
+
+      jQuery('#diamonds_comparison_table').css('display','none');
+
+      jQuery('#diamonds_search_table').css('display','none');
+
+    });
+
+    jQuery('#tab_diamonds_comparison').click(function(){
+
+      jQuery('.search-nothing-tips').addClass('hidden');
+
+      jQuery('#listContainer').removeClass('hidden');
+
+      jQuery('.scrollbar').css('visibility', 'hidden');
+
+      jQuery('#cmp-scrollbar').css('visibility','visible');
+
+      jQuery('#search_recently_header_table').css('display', 'none');
+
+      jQuery('#search_comparison_header_table').css('display', 'block');
+
+      jQuery('#search_result_header_table').css('display', 'none');
+
+      jQuery('#diamonds_recently_viewed_table').css('display','none');
+
+      jQuery('#diamonds_comparison_table').css('display','block');
+
+      jQuery('#diamonds_search_table').css('display','none');
+
+    });
+
+    jQuery("#recently_viewed_table").delegate("div","click", function(){save_compared(this);});
+
+    jQuery("#search_result_table").delegate("div","click", function(){save_compared(this);});
+
+    jQuery("#comparison_table").delegate("div","click", function(){save_compared(this);});
+
+
+
+    jQuery.cookie('cyo_shape', "", {path: '/'});
+
+  });
+
+</script>
+
+<!-- Overlay section -->
+
+<div id="overlay" style="left:0;display:none; width:100%; height:100%; position: absolute; z-index: 2008; background-color:#82838E; FILTER: alpha(opacity=60); opacity: 0.6; moz-opacity: 0.6;"> 
+  <script type="text/javascript">
+
+    if (jQuery.browser.msie) {
+
+      document.write('<iframe height="100%" width="100%" style="FILTER: alpha(opacity=10); opacity: 0.1; moz-opacity: 0; z-index:2008;" frameborder="no" ></iframe>');
+
+    }
+
+    jQuery('#overlay').click(function(){
+
+      jQuery('.overPopup').hide();
+
+      jQuery('#overlay').removeClass('overPopup');
+
+    });
+
+  </script> 
+</div>
+
+<!-- End Overlay section --> 
+
+<!-- SITE BODY START -->
+
+<div class="container">
+  <div class="row pt20">
+    <div class="col-md-12 col-sm-12 text-center">
+      <h1 class="h2 fs-46 text-dark mt0 pb10 mb5" style="border-bottom:1px solid #666666;">Search for Diamonds</h1>
+      <h4 class="h2 fs-18 text-dark mt0 pb40" style="text-transform:none;">With The Loose Diamond you have the opportunity to make a piece of jewelry completely 
+        one of a kind.</h4>
+    </div>
+  </div>
+  <div class="search-diamonds">
+    <div id="mobile-ajax-loading" style="width: 100%; position: relative; display: none;">
+      <div class="loading" style="height: 1366px;"> <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/ajax-loading.gif" width="66" height="66" /> </div>
+    </div>
+    <div class="search-diamonds-panel">
+      <div class="row">
+        <div class="col-md-12 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a style="text-decoration: underline;" href="javascript:void(0);" data-toggle="modal" data-target="#shape">SHAPE</a></div>
+            <div class="col-md-10 col-sm-10" style="padding:0">
+              <ul class="product-shape">
+                <li class="round-details active" data-action="unselected" data-label="Loose Diamond|Shape|Round" data-category="Filter" data-shape="Round"><a href="javascript:void(0);"><span>ROUND</span></a></li>
+                <li class="princess-details active" data-action="selected" data-label="Loose Diamond|Shape|Princess" data-category="Filter" data-shape="Princess"><a href="javascript:void(0);"><span>PRINCESS</span></a></li>
+                <li class="cushion-details active" data-action="selected" data-label="Loose Diamond|Shape|Cushion" data-category="Filter" data-shape="Cushion"><a href="javascript:void(0);"><span>CUSHION</span></a></li>
+                <li class="asscher-details active" data-action="selected" data-label="Loose Diamond|Shape|Asscher" data-category="Filter" data-shape="Asscher"><a href="javascript:void(0);"><span>ASSCHER</span></a></li>
+                <li class="marquise-details active" data-action="selected" data-label="Loose Diamond|Shape|Marquise" data-category="Filter" data-shape="Marquise"><a href="javascript:void(0);"><span>MARQUISE</span></a></li>
+                <li class="oval-details active" data-action="selected" data-category="Filter" data-shape="Oval"><a href="javascript:void(0);"><span>OVAL</span></a></li>
+                <li class="radiant-details active" data-action="selected" data-label="Loose Diamond|Shape|Radiant" data-category="Filter" data-shape="Radiant"><a href="javascript:void(0);"><span>RADIANT</span></a></li>
+                <li class="pear-details active" data-action="selected" data-label="Loose Diamond|Shape|Pear" data-category="Filter" data-shape="Pear"><a href="javascript:void(0);"><span>PEAR</span></a></li>
+                <li class="emerald-details active" data-action="selected" data-label="Loose Diamond|Shape|Emerald" data-category="Filter" data-shape="Emerald"><a href="javascript:void(0);"><span>EMERALD</span></a></li>
+                <li class="heart-details active" data-action="selected" data-label="Loose Diamond|Shape|Heart" data-category="Filter" data-shape="Heart"><a href="javascript:void(0);"><span>HEART</span></a></li>
+              </ul>
+              <input id="shapes" name="shapes" type="hidden" value="" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a style="text-decoration: underline;" href="javascript:void(0);" data-toggle="modal" data-target="#carat-weight">CARAT</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="carat_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Carat"></div>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <input id="min_carat" name="min_carat"  class="form-control  input-sm amount-min">
+                  </div>
+                  <div class="form-group pull-right">
+                    <input id="max_carat" name="max_carat"  class="form-control  input-sm amount-max">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a style="text-decoration: underline;" href="javascript:void(0);" data-toggle="modal" data-target="#price">PRICE</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="shadow_price_slider" class="noUiSlider"></div>
+                <div class="slider-data form-inline">
+                  <div class="form-group pull-left">
+                    <input id="min_price_display" type="text" pattern="[0-9]*" class="form-control input-sm amount-min" />
+                    <input id="min_price" name="min_price" type='text' class="form-control  input-sm amount-min hidden" />
+                  </div>
+                  <div class="form-group pull-right">
+                    <input id="max_price_display" type="text" pattern="[0-9]*" class="form-control  input-sm amount-max" />
+                    <input id="max_price" name="max_price" type='text' class="form-control  input-sm amount-max hidden" />
+                  </div>
+                </div>
+              </div>
+              <div class="search-noUiSlider">
+                <div id="price_slider" class="noUiSlider hidden" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Price"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="row">
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a style="text-decoration: underline;" href="javascript:void(0);" data-toggle="modal" data-target="#color">COLOR</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="color_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Color"></div>
+                <ul class="color-slider-data">
+                  <li>D</li>
+                  <li>E</li>
+                  <li>F</li>
+                  <li>G</li>
+                  <li>H</li>
+                  <li>I</li>
+                  <li>J</li>
+                </ul>
+                <input id="colors" name="colors" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 item">
+          <div class="row">
+            <div class="col-md-2 col-sm-2 h5"><a style="text-decoration: underline;" href="javascript:void(0);" data-toggle="modal" data-target="#clarity">CLARITY</a></div>
+            <div class="col-md-10 col-sm-10">
+              <div class="search-noUiSlider">
+                <div id="clarity_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Clarity"></div>
+                <ul class="clarity-slider-data">
+                  <li>FL</li>
+                  <li>IF</li>
+                  <li>VVS1</li>
+                  <li>VVS2</li>
+                  <li>VS1</li>
+                  <li>VS2</li>
+                  <li>SI1</li>
+                  <li>SI2</li>
+                </ul>
+                <input id="clarities" name="clarities" type="hidden" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <div class="advanced-search-wrapper">
+      <div class="form-inline advanced-search clearfix brandon-medium">
+        <div class="row"> 
+          <div class="col-md-4 col-sm-4">
+            <div class="heading"><i id="adv_bar_toggler" class="icons-quadrate-plus ico-l"></i> ADVANCED SEARCH</div>
+          </div>
+          
+          <div class="col-md-6 col-sm-8 hidden-xs text-right col-md-offset-1">
+            <div class="search-check-lists">
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Cut">
+                <label id="adv_bar_cut"><i class="icons-checkbox"></i><a href="javascript:void(0);">Cut</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Fluorescence">
+                <label id="adv_bar_fluorescence"><i class="icons-checkbox"></i><a href="javascript:void(0);">Fluorescence</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|L:W Ratio">
+                <label id="adv_bar_ratio"><i class="icons-checkbox"></i><a href="javascript:void(0);">Ratio</a></label>
+              </div>
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Report">
+                <label id="adv_bar_report"><i class="icons-checkbox"></i><a href="javascript:void(0);">Certification</a></label>
+              </div>
+              <?php /*?><div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Collections">
+
+                <label id="adv_bar_collection"><i class="icons-checkbox"></i><a href="javascript:void(0);">Collections</a></label>
+
+              </div>
+
+              <div class="checkbox checkbox-ty2" data-category="Filter" data-action="selected" data-label="Loose Diamonds|Origin">
+
+                <label id="adv_bar_origin"><i class="icons-checkbox"></i><a href="javascript:void(0);">Origin</a></label>
+
+              </div><?php */?>
+            </div>
+          </div>
+          <div class="visible-sm clearfix"></div>
+        </div>
+      </div>
+      <div class="advanced-search-filter" style="display: none;">
+        <div class="container in" id="listpage-filter">
+          <div class="row">
+            <div class="col-md-5 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 cut text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#cut">CUT</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt15 pb10">
+                    <div id="cut_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Cut"></div>
+                    <ul class="cut-slider-data">
+                      <li>EXCELLENT</li>
+                      <li>VERY<br class="visible-xs">
+                        GOOD</li>
+                      <li>GOOD</li>
+                      <li>FAIR</li>
+                    </ul>
+                    <input id="cuts" name="cuts" type="hidden" value="" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-md-3 col-sm-6 col-md-offset-2">
+              <dl class="mb0">
+                <dt class="h6 ratio text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#ratio">L:W RATIO</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt15 pb10">
+                    <div id="ratio_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamonds|Length To Width Ratio"></div>
+                    <div class="slider-data form-inline">
+                      <div class="form-group pull-left">
+                        <input id="min_ratio" name="min_ratio" type="text" class="form-control input-sm amount-min" />
+                      </div>
+                      <div class="form-group pull-right">
+                        <input id="max_ratio" name="max_ratio" type="text" class="form-control input-sm amount-max" />
+                      </div>
+                    </div>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-5 col-sm-6 col-md-offset-1">
+              <dl class="mb0">
+                <dt class="h6 fluorescence text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#fluorescence">FLUORESCENCE</a></dt>
+                <dd>
+                  <div class="search-noUiSlider pt15 pb10">
+                    <div id="fluorescence_slider" class="noUiSlider" data-category="Filter" data-action="Slide" data-label="Loose Diamond|Fluorescence"></div>
+                    <ul class="fluorescence-slider-data">
+                      <li>VERY<br class="visible-xs">
+                        STRONG</li>
+                      <li>STRONG</li>
+                      <li>MEDIUM</li>
+                      <li>FAINT</li>
+                      <li>NONE</li>
+                    </ul>
+                    <input id="fluorescences" name="fluorescences" type="hidden" value="" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+            <div id="report_div" class="col-md-3 col-sm-6 col-md-offset-2">
+              <dl>
+                <dt class="h6 text-center"><a href="javascript:void(0);" data-toggle="modal" data-target="#report">Certification</a></dt>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|GIA">
+                    <label><i class="icons-checkbox"></i>GIA</label>
+                    <input name="c_report" type="checkbox" value="GIA" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|HRD">
+                    <label><i class="icons-checkbox"></i>HRD</label>
+                    <input name="c_report" type="checkbox" value="HRD" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|EGL">
+                    <label><i class="icons-checkbox"></i>EGL</label>
+                    <input name="c_report" type="checkbox" value="EGL" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|IGI">
+                    <label><i class="icons-checkbox"></i>IGI</label>
+                    <input name="c_report" type="checkbox" value="IGI" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|EGL - USA">
+                    <label><i class="icons-checkbox"></i>EGL - USA</label>
+                    <input name="c_report" type="checkbox" value="EGL - USA" />
+                  </div>
+                </dd>
+                <dd>
+                  <div class="checkbox checkbox-ty2" data-category="Filter" data-action="Select" data-label="Loose Diamonds|Report|AGS">
+                    <label><i class="icons-checkbox"></i>AGS</label>
+                    <input name="c_report" type="checkbox" value="AGS" />
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="control-hide">
+        <button id="adv_bar_collapser" type="button" class="btn btn-sm btn-success" style="background:black; color:#fff; border:0; display: none;">HIDE <i class="icons-chevron-up-white ico-r"></i></button>
+      </div>
+    </div>
+    <div class="your-search-results table-responsive">
+      <div id="similar_bar" class="row ysr-heading" style="display: none;">
+        <div class="col-md-8 col-sm-6"><span class="text-dark">SIMILAR DIAMONDS</span></div>
+      </div>
+      <div id="original_bar" class="row ysr-heading">
+        <div class="col-md-12 col-sm-12 reset-search" id = "similar_bar_link" style='display: none;'> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">RESET SEARCH</a><br>
+          <span id="original_link">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_original();">VIEW ORIGINAL DIAMONDS</a></span> </div>
+        <div class="col-md-12 col-sm-12 reset-search" id="orginal_bar_link"> <a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.reset_search();">RESET SEARCH</a><br>
+          <span id="similar_link" style="display: none;">&nbsp;<a href="javascript:void(0);" class="text-dark td-u" onclick="dtl.view_similar();">VIEW SIMILAR DIAMONDS</a></span> </div>
+        <div class="col-md-12 col-sm-12 col-tabs">
+          <div class="ysr-tabs">
+            <ul class="nav nav-tabs">
+              <li class="active"><a data-toggle="tab" role="tab" id = 'tab_diamonds_search' style="cursor: default;"> <span>results (</span> <span id="totalResult">&nbsp;&nbsp;&nbsp;&nbsp;</span><span>)</span></a></li>
+              <li class=""><a data-toggle="tab" role="tab" id = 'tab_diamonds_recently_viewed' data-label="Loose Diamond|Search|Recently Viewed" data-action="Click" data-category="Tab" style="cursor: default;"><span>recently viewed (</span><span id="recently_viewed_totalResult">0</span><span>)</span></a></li>
+              <li class=""><a data-toggle="tab" role="tab" id = 'tab_diamonds_comparison' data-label="Loose Diamond|Search|Comparison" data-action="Click" data-category="Tab" style="cursor: default;"><span>compare (</span><span id="comparison_totalResult">0</span><span>)</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="search-nothing-tips mb50 pt20 hidden"> Unfortunately, no diamonds match your selected criteria. Please <a href='/contact/'>contact us</a> to speak to a diamond specialist to help you find the perfect diamond. </div>
+      <div class="cm-row" id="listContainer">
+        <div class="col-md-9">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="search-results-outline">
+            <thead>
+              <tr>
+                <th width="100%" scope="col"> <table id="search_result_header_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default">compare</a></span></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)">SHAPE</a></span><a href="javascript:void(0);"><i id="order_by_shape" class="icons-chevron-down" onclick="dtl.change_order_by('shape');"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);">CARAT</a></span><a href="javascript:void(0);"><i id="order_by_carat" class="icons-chevron-down" onclick="dtl.change_order_by('carat');"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)">COLOR</a></span><a href="javascript:void(0);"><i id="order_by_color" class="icons-chevron-down" onclick="dtl.change_order_by('color');"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)">CLARITY</a></span><a href="javascript:void(0);"><i id="order_by_clarity" class="icons-chevron-down" onclick="dtl.change_order_by('clarity');"></i></a></th>
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)">CUT</a></span><a href="javascript:void(0);"><i id="order_by_cut" class="icons-chevron-down" onclick="dtl.change_order_by('cut');"></i></a></th>
+                                                
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)">FLUOR</a></span><a href="javascript:void(0);"><i id="order_by_fluorescence" class="icons-chevron-down" onclick="dtl.change_order_by('fluorescence');"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)">L:W</a></span><a href="javascript:void(0);"><i id="order_by_l_w" class="icons-chevron-down" onclick="dtl.change_order_by('l:w');"></i></a></th>
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)">REPORT</a></span><a href="javascript:void(0);"><i id="order_by_report" class="icons-chevron-down" onclick="dtl.change_order_by('report');"></i></a></th>
+                                                
+                        <th width="12%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)">PRICE</a></span><a href="javascript:void(0);"><i id="order_by_price" class="icons-chevron-up" onclick="dtl.change_order_by('price');"></i></a></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <table id="search_recently_header_table" style="display:none" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default">compare</a></span></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)">SHAPE</a></span><a href="javascript:void(0);"><i id="r_order_by_shape" class="icons-chevron-down" onclick="new_change_order_by('shape', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);">CARAT</a></span><a href="javascript:void(0);"><i id="r_order_by_carat" class="icons-chevron-down" onclick="new_change_order_by('carat', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)">COLOR</a></span><a href="javascript:void(0);"><i id="r_order_by_color" class="icons-chevron-down" onclick="new_change_order_by('color', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)">CLARITY</a></span><a href="javascript:void(0);"><i id="r_order_by_clarity" class="icons-chevron-down" onclick="new_change_order_by('clarity', this);"></i></a></th>
+                        <th width="13%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)">CUT</a></span><a href="javascript:void(0);"><i id="r_order_by_cut" class="icons-chevron-down" onclick="new_change_order_by('cut', this);"></i></a></th>
+                                                
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)">FLUOR</a></span><a href="javascript:void(0);"><i id="r_order_by_fluorescence" class="icons-chevron-down" onclick="new_change_order_by('fluorescence', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)">L:W</a></span><a href="javascript:void(0);"><i id="r_order_by_l_w" class="icons-chevron-down" onclick="new_change_order_by('l:w', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)">REPORT</a></span><a href="javascript:void(0);"><i id="r_order_by_report" class="icons-chevron-down" onclick="new_change_order_by('report', this);"></i></a></th>
+                                                
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)">PRICE</a></span><a href="javascript:void(0);"><i id="r_order_by_price" class="icons-chevron-up" onclick="new_change_order_by('price', this);"></i></a></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <table id="search_comparison_header_table" style="display:none" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-head">
+                    <thead>
+                      <tr>
+                        <th width="10%" style="text-align: center;" scope="col"><span data-target="#compare" data-toggle="modal"><a href="javascript:void(0)" style="text-decoration: none; cursor:default">compare</a></span></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#shape"><a href="javascript:void(0)">SHAPE</a></span><a href="javascript:void(0);"><i id="r_order_by_shape" class="icons-chevron-down" onclick="new_change_order_by('shape', this);"></i></a></th>
+                        <th width="10%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#carat-weight"><a href="javascript:void(0);">CARAT</a></span><a href="javascript:void(0);"><i id="r_order_by_carat" class="icons-chevron-down" onclick="new_change_order_by('carat', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#color"><a href="javascript:void(0)">COLOR</a></span><a href="javascript:void(0);"><i id="r_order_by_color" class="icons-chevron-down" onclick="new_change_order_by('color', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#clarity"><a href="javascript:void(0)">CLARITY</a></span><a href="javascript:void(0);"><i id="r_order_by_clarity" class="icons-chevron-down" onclick="new_change_order_by('clarity', this);"></i></a></th>
+                        <th width="13%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#cut"><a href="javascript:void(0)">CUT</a></span><a href="javascript:void(0);"><i id="r_order_by_cut" class="icons-chevron-down" onclick="new_change_order_by('cut', this);"></i></a></th>
+                                                
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#fluorescence"><a href="javascript:void(0)">FLUOR</a></span><a href="javascript:void(0);"><i id="r_order_by_fluorescence" class="icons-chevron-down" onclick="new_change_order_by('fluorescence', this);"></i></a></th>
+                        <th width="0%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#ratio"><a href="javascript:void(0)">L:W</a></span><a href="javascript:void(0);"><i id="r_order_by_l_w" class="icons-chevron-down" onclick="new_change_order_by('l:w', this);"></i></a></th>
+                        <th width="9%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#report"><a href="javascript:void(0)">REPORT</a></span><a href="javascript:void(0);"><i id="r_order_by_report" class="icons-chevron-down" onclick="new_change_order_by('report', this);"></i></a></th>
+                                                
+                        <th width="11%" scope="col" style="text-align: center;"><span data-toggle="modal" data-target="#price"><a href="javascript:void(0)">PRICE</a></span><a href="javascript:void(0);"><i id="r_order_by_price" class="icons-chevron-up" onclick="new_change_order_by('price', this);"></i></a></th>
+                        <th width="9%" scope="col">&nbsp;</th>
+                      </tr>
+                    </thead>
+                  </table>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left" valign="top"><div id="search-scrollbar">
+                    <div class="loading hidden" style="height: 710px;" > <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/ajax-loading.gif" width="66" height="66" /> </div>
+                    <div id="result-scrollbar" class="scrollbar">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div id="recent-scrollbar" class="scrollbar" style="visibility:hidden;">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div id="cmp-scrollbar" class="scrollbar" style="visibility:hidden;">
+                      <div class="minimal-vertical-wrap" style="height: 704px;">
+                        <div class="noUiSlider2 minimal-vertical" style="height: 665px;"></div>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_search_table' style="height: 710px;">
+                      <div class="overview">
+                        <table id="search_result_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_recently_viewed_table' style="height: 710px; display: none;">
+                      <div class="overview">
+                        <table id="recently_viewed_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="viewport" id = 'diamonds_comparison_table' style="height: 710px; display: none;">
+                      <div class="overview">
+                        <table id="comparison_table" width="100%" border="0" cellspacing="0" cellpadding="0" class="table-striped search-result-table table-hover">
+                          <tbody>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-3">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" class="search-results-outline">
+            <thead>
+              <tr>
+                <th width="100%" scope="col" style="border-right:0;text-align:center;">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td valign="top"><div class="diamond-information">
+                    <div class="no-info"> <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/no-info50x50.png" />
+                      <p class="pt20">Hover over a diamond to see further details and shipping information.</p>
+                      <p class="pt20">Check the compare box to send multiple diamonds to the comparison tab.</p>
+                    </div>
+                    <div class="info container" id="diamond_info_panel" style="display: none; padding-top: 10px;"> </div>
+                  </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <input id="id_active_tab" type="hidden" value="None" />
+      <div id="errmsg"></div>
+    </div>
+  </div>
+</div>
+<style type="text/css">
+
+.dl-horizontal dt{width: 80px;}
+
+.dl-horizontal dd{margin-left: 90px;}
+
+
+
+</style>
+<div class="modal fade modal-type2" id="total-carat" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Eternity Ring Carat Weight</h4>
+      </div>
+      <div class="modal-body">
+        <p>The ring size of an eternity ring determines its total carat weight. The total carat weight range reflects the difference in total carat weight between a size three and a size eight.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="stone-count" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Eternity Ring Gemstones</h4>
+      </div>
+      <div class="modal-body">
+        <p>The ring size of an eternity ring determines its total number of gemstones. The total number of gemstones range reflects the difference in total number of gemstones between a size three and a size eight.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="price" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">PRICE</h4>
+      </div>
+      <div class="modal-body">
+        <p>All of our prices are in USjQuery.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="shape" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">SHAPE</h4>
+      </div>
+      <div class="modal-body">
+        <p>Diamond cut should not be confused with shape. Shape refers to the general outward appearance of the diamond, not its reflective qualities. JewelryDemo.com currently carries the following shapes:</p>
+        <div class="popupTable" style="height:200px;">
+          <ol>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/round_tn.jpg" alt="round" /><span>Round</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/oval_tn.jpg" alt="oval" /><span>Oval</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/pear_tn.jpg" alt="pear" /><span>Pear</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/princess_tn.jpg" alt="princess" /><span>Princess</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/ascher_tn.jpg" alt="asscher" /><span>Asscher</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/cushion.jpg" alt="cushion" /><span>Cushion</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/emerald_tn.jpg" alt="emerald" /><span>Emerald</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/marquise_tn.jpg" alt="marquise" /><span>Marquise</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/radiant_tn.jpg" alt="radiant" /><span>Radiant</span></li>
+            <li><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/heart_tn.jpg" alt="roundtn" /><span>Heart</span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="carat-weight" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CARAT</h4>
+      </div>
+      <div class="modal-body">
+        <p>The carat is the unit of weight of a diamond. Carat is often confused with size even though it is actually a measure of weight. One carat equals 200 milligrams or 0.2 grams. Often diamond weight is declared in points. One carat is equal to 100 points. Thus, a .75 carat diamond is equivalent to 75 points. The word comes from the carob bean, whose consistent weight was used in times past to measure gemstones.</p>
+        <p>Once cut, color, and clarity grade have been determined, the carat weight of a diamond can easily be established to fit within a budget. When diamonds are mined, large gems are discovered much less frequently than small ones, which make large diamonds much more valuable. In fact, diamond prices rise exponentially with carat weight. For example, a 2-carat diamond of a given quality is always worth more than two 1-carat diamonds of the same quality. A diamond of double the weight costs around four times more. The cutoff weights are 1/2ct, 3/4ct, 90 points, 1ct, 1.5ct, and 2ct. 'Under-sizes' are diamonds that weigh just below a cutoff weight and while fewer exist, they represent an exceptional value.</p>
+        <p>Total carat weight (t.c.w.) is a phrase used to describe the total mass of diamonds or other gemstone in a piece of jewelry when more than one gemstone is used. Diamond solitaire earrings, for example, are usually quoted in t.c.w., indicating the mass of the diamonds in both earrings and not each individual diamond.</p>
+        <p>To learn more about carat weight or download our Diamond Carat Size Guide, click <a href="/diamond-carat-ranges/" style='text-decoration:underline;'>here</a>. </p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="symmetry" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">SYMMETRY</h4>
+      </div>
+      <div class="modal-body">
+        <p>Describes the alignment of the facets of the diamond. If facets are misaligned, the diamond may poorly reflect light. Symmetry is graded from Ideal / Excellent, Very Good, Good, Fair, or Poor. Symmetry grades of Good or higher have the least effect on the brilliance of the diamond and are suitable for the finest quality jewelry. Certain gem labs, such as Gemscan, incorporate Symmetry into an overall Cut grade.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="depth" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">DEPTH</h4>
+      </div>
+      <div class="modal-body">
+        <p>The height of a gemstone, from the culet to the table. Depth % is the height of the diamond as a percentage of the girdle diameter.</p>
+        <p align="center"><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/cut2.gif" alt="depth" /></p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="measurements" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">MEASUREMENTS</h4>
+      </div>
+      <div class="modal-body">
+        <p>Diamonds are given three measurements to specify their dimensions. For fancy shaped diamonds, the measurement specifies length x width x depth. The length is the larger dimension as you view the diamond from the top and the width is the smaller. The depth is the height of a gemstone, from the culet to the table. The measurements determine the length to width ratio and can indicate the quality of cut of the diamond. </p>
+        <p>For round diamonds, the measurement specifies diameter 1 x diameter 2 x depth. Round diamonds are never quite perfectly round given they are cut by humans. They are given two measurements for diameter to indicate the maximum and minimum diameter. These two diameters vary slightly, but should not vary by very much.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="polish" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">POLISH</h4>
+      </div>
+      <div class="modal-body">
+        <p>Describes the finish of the facets of the diamond. Polish is graded from Ideal, Excellent, Very Good, Good, Fair, or Poor. Polish grades of Good or higher have the least effect on the brilliance of the diamond and are suitable for the finest quality jewelry. Certain gem labs, such as Gemscan, incorporate Polish into an overall cut grade.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="table" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">TABLE</h4>
+      </div>
+      <div class="modal-body">
+        <p> The largest facet of a gemstone, located at the top. Table % is the table width as a percentage of the girdle diameter.</p>
+        <p align="center"><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/cut2.gif" alt="table" /></p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="girdle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">GIRDLE</h4>
+      </div>
+      <div class="modal-body">
+        <p>The narrow rim around the widest part of a diamond, separating the crown from the pavillion.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="culet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CULET</h4>
+      </div>
+      <div class="modal-body">
+        <p>The tiny facet at the bottom tip of a gemstone. The optimal culet should be pointed or very small (graded "small" or "none").</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="fluorescence" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">FLUORESCENCE</h4>
+      </div>
+      <div class="modal-body">
+        <p>Describes the diamond's response to ultraviolet light. In diamonds with strong or very strong fluorescence, there may be some interference with the flow of light which causes a milky or oily appearance. Canadian diamonds almost always have none to slight fluorescence.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="color" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">COLOR</h4>
+      </div>
+      <div class="modal-body">
+        <p>Color is the natural color visible in a diamond and does not change over time. Colorless diamonds allow more light to pass through than a colored diamond, releasing more sparkle and fire. Acting as a prism, a diamond divides light into a spectrum of colors and reflects this light as colorful flashes called fire. Just as when looking through colored glass, color in a diamond will act as a filter and will diminish the spectrum of color emitted. The less color in a diamond, the more colorful the fire, and the better the color grade. Color refers to the degree to which a diamond is colorless. Diamond color has a significant impact on its value. Color also has more influence on prices in higher clarity grades.</p>
+        <p>The professional color scale begins with the highest rating of D for colorless, and travels down the alphabet to grade stones with traces of very faint or light yellowish or brownish color. Usually, the closer a diamond is to colorless, the more beautiful and valuable it is. Diamonds graded D-F are considered "colorless," G-J are considered "near-colorless," K-M are "slightly colored," and N-Y usually appear light yellow or brown. JewelryDemo.com only carries diamonds of superior color, ranged D-J.</p>
+        <dl class="dl-horizontal">
+          <dt>D:</dt>
+          <dd>Absolutely colorless or icy white. The highest color grade-- extremely rare and most expensive.</dd>
+          <dt>E:</dt>
+          <dd>Colorless. Only miniscule traces of color can be detected by an expert gemologist - a rare, high quality diamond.</dd>
+          <dt>F: </dt>
+          <dd>Colorless. Slight color detected by an expert gemologist, but still considered a "colorless" grade -- a high-quality diamond.</dd>
+          <dt>G-H:</dt>
+          <dd>Near-colorless. Color noticeable when compared to diamonds of better grades, but offers excellent value.</dd>
+          <dt>I-J:</dt>
+          <dd>Near-colorless. Slightly detected color – a good value.</dd>
+          <dt>K-Y:</dt>
+          <dd>Slightly colored or colored. Not carried by JewelryDemo.com.</dd>
+        </dl>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="clarity" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="scrollbars=auto">
+  <div class="modal-dialog">
+    <div class="modal-content" style="height:550px; overflow: auto; -webkit-overflow-scrolling: touch;">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CLARITY</h4>
+      </div>
+      <div class="modal-body">
+        <p>A diamond's clarity refers to the presence of impurities on and within the stone. When a rough stone is extracted from carbon deep beneath the earth, tiny traces of natural elements are almost always trapped inside. These elements are called flaws or inclusions because they are formed naturally and are unique to each stone. Inclusions may be crystals of a foreign material or another diamond crystal, or structural imperfections such as tiny cracks that can appear whitish or cloudy. The number, size, color, relative location, orientation, and visibility of inclusions can all affect the relative clarity of a diamond. Diamonds with few inclusions are considered particularly rare and highly valued. After carat weight, clarity has the most influence on cost.</p>
+        <p>A well-cut diamond will optimize the use of light, creating fire and brilliance. Inclusions can hinder how the light reflects, lessening the brilliance and prismatic effect of color in a diamond.</p>
+        <p>When gemologists inspect diamonds for overall quality, they must use a 10x magnification loupe (a small magnifying lens used to examine diamonds) to determine the size, type, and position of the imperfections.</p>
+        <dl class="dl-horizontal">
+          <dt>FL:</dt>
+          <dd>Flawless with no internal or external flaws. Extremely rare and valuable.</dd>
+          <dt>IF:</dt>
+          <dd>Internally Flawless. No internal flaws.</dd>
+          <dt>VVS1:</dt>
+          <dd>Very very slightly included 1. Very difficult to see under 10x magnification.</dd>
+          <dt>VVS2:</dt>
+          <dd>Very very slightly included 2. Very difficult to see under 10x magnification. Slightly more inclusions than VVS1.</dd>
+          <dt>VS1:</dt>
+          <dd>Very slightly included 1. Difficult to see inclusions under 10x magnification. Typically cannot see inclusions with the naked eye.</dd>
+          <dt>VS2:</dt>
+          <dd>Very slightly included 2. Difficult to see inclusions under 10x magnification. Typically cannot see inclusions with the naked eye. Slightly more inclusions than VS1.</dd>
+          <dt>SI1:</dt>
+          <dd>Slightly included 1. Inclusions are visible under 10x magnification, but may not be very visible with unaided eye.</dd>
+          <dt>SI2:</dt>
+          <dd>Slightly included 2. Inclusions are visible under 10x magnification and may be visible with unaided eye. More inclusions than SI1.</dd>
+          <dt>I1 - I3:</dt>
+          <dd>Included 1-3. Inclusions are visible to the unaided eye. Not carried by JewelryDemo.com.</dd>
+        </dl>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="cut" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="scrollbars=auto">
+  <div class="modal-dialog">
+    <div class="modal-content" style="height:550px; overflow: auto; -webkit-overflow-scrolling: touch;">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CUT</h4>
+      </div>
+      <div class="modal-body">
+        <p>The cut refers to the angles and proportions of a diamond. The cut of a diamond - its roundness, its depth and width, the uniformity of the facets - determines its beauty. The skill with which a diamond is cut determines how well it reflects and refracts light. A well-cut diamond will internally reflect light from one mirror-like facet to another and disperse and reflect the light through the top of the stone. This results in a display of brilliance and fire. Fire, or dispersion, is the ability of a diamond to break light into rainbow colors. Brilliance describes the brightness from reflections of white light coming from the diamond.</p>
+        <p>Cut is considered to be the most important diamond characteristic because a well-cut diamond can appear to be of greater carat weight and have enhanced clarity and color.</p>
+        <p>The quality of the cut is determined by a number of factors, including proportion, symmetry, and the relative angles of various facets. The width and depth have the greatest effect on how light travels within the diamond, and how it exits in the form of brilliance. A poorly-cut diamond with facets cut only a few degrees out of alignment can result in a poorly performing stone. A well-cut diamond should reflect most light out from the table (the largest top facet) and make the diamond appear white when viewed from the top. An inferior cut will produce a stone that appears dark at the center and in some extreme cases the ring settings may show through the top of the diamond as shadows.</p>
+        <p align="center"><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/cut1.gif" alt="cut"/></p>
+        <p>The best cut diamonds have proportions that are within specified ranges to maximize brilliance. The cut grading scale of diamonds is based on the reflective properties of the diamond according to the calculated diamond measurements.</p>
+        <dl class="dl-horizontal">
+          <dt>Super Ideal:</dt>
+          <dd>Cut to the most exacting standards. On the diamond certificate, graded as "Excellent" or "Ideal" for cut, polish, and symmetry. These diamonds will also show a "hearts and arrows" facet pattern, have the most desirable girdle and culet dimensions, and be proportioned to return the maximum possible light.</dd>
+          <dt>Ideal:</dt>
+          <dd>Exquisite quality cut to create the optimal combination of brilliance and fire. Reflects nearly all light that enters the diamond. Top 3% of diamond quality based on cut.</dd>
+          <dt>Very Good:</dt>
+          <dd>Superior quality cut that reflects nearly as much light as the ideal cut while at a substantially lower cost. Top 15% of diamond quality.</dd>
+          <dt>Good:</dt>
+          <dd>Premium quality cut to optimize the size without sacrificing quality or beauty. Reflects most light that enters. Top 25% of diamond quality.</dd>
+          <dt>Fair:</dt>
+          <dd>Good quality cut which reflects some light while maximizing weight. While not as brilliant as a good cut, still a quality diamond. Top 35% of diamond quality.</dd>
+          <dt>Poor:</dt>
+          <dd>Inadequate quality cut that reflects minimal amount of light. JewelryDemo.com does not provide diamonds with cut grades of poor.</dd>
+        </dl>
+        <div class="h4 mb15">Diamond Characteristics</div>
+        <p align="center"><img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/cut2.gif" alt="cut"/></p>
+        <dl class="dl-horizontal">
+          <dt>Diameter:</dt>
+          <dd>Width of diamond as measured through the girdle.</dd>
+          <dt>Culet:</dt>
+          <dd>The tiny facet at the bottom tip of a gemstone. The optimal culet should be pointed or very small (graded &quot;small&quot; or &quot;none&quot;).</dd>
+          <dt>Table:</dt>
+          <dd>The largest facet of a gemstone, located at the top.</dd>
+          <dt>Crown:</dt>
+          <dd>The top portion of the diamond, from the girdle to the table.</dd>
+          <dt>Pavillion:</dt>
+          <dd>The lower portion of a diamond, from the girdle to the culet.</dd>
+          <dt>Girdle:</dt>
+          <dd>The narrow rim around the widest part of a diamond, separating the crown from the pavillion.</dd>
+          <dt>Depth:</dt>
+          <dd>The height of a gemstone, from the culet to the table.</dd>
+        </dl>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="report" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="scrollbars=auto">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">REPORT</h4>
+      </div>
+      <div class="modal-body">
+        <p>A diamond certificate or grading report provides an expert opinion on the quality of the diamond and is provided by an independent gemology lab. Trained gemologists with specialized equipment measure the weight and dimensions of the diamond and assess quality characteristics such as cut, color, and clarity. JewelryDemo.com diamonds are certified by the world's leading gem grading labs including GIA, AGS, IGI, and Gemscan. Diamonds graded by CDL (Canadian Diamond Laboratory) are evaluated by specialized equipment on premise. If the diamond lab certificate is not available online, please <a target="_blank" href="/contact/">contact us</a> to request an electronic copy.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="origin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Certificate of Origin</h4>
+      </div>
+      <div class="modal-body">
+        <p>All JewelryDemo.com diamonds come with a certificate guaranteeing the conflict free origin of the diamond. Our diamonds are tracked throughout their chain of custody to ensure that they are mined, cut, and polished in areas not tainted by war. This ensures that the diamonds are certified for their pure origin and are not corrupted by illicit or conflict diamonds. All of our diamonds are also verified to be produced with environmentally responsible methods using ethical labor practices.</p>
+        <p>While other retailers may claim that they do not carry conflict diamonds, very few have auditing processes to guarantee the ethical source of their diamonds. JewelryDemo.com provides a diamond origin certification and can track our diamonds back to their source. </p>
+        <p><a href="/conflict-diamond-facts/" style="text-decoration: underline;">Learn more about Conflict Diamond Issues.</a></p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="collections" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">DIAMOND COLLECTIONS</h4>
+      </div>
+      <div class="modal-body">
+        <p>Browse our diamonds according to general preferences and staff recommendations.</p>
+        <p>Our current diamond collections include:</p>
+        <ul>
+          <li>Glacier Collection: Our premium and rarest diamonds, exhibiting the most sparkle and brilliance</li>
+          <li>Yosemite Collection: Beautiful diamonds offering an optimal balance between size and quality.</li>
+          <li>Recommended Collection: Hand-selected by our staff gemologists to offer diamonds of unique beauty that maximize value for any budget. Diamonds are in stock and available immediately.</li>
+        </ul>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="recommended" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">RECOMMENDED COLLECTION</h4>
+      </div>
+      <div class="modal-body">
+        <div class="popup_collection_right">
+          <p>Hand-selected by our staff gemologists to offer diamonds of unique beauty that maximize value for any budget.<br/>
+            Diamonds are in stock and available immediately.</p>
+          <p><a href="javascript:void(0)" onclick="javascript:refreshpage('/loose-diamonds/search/?collections=Recommended')" style="text-decoration:underline;">Browse Collection</a></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="glacier" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">GLACIER COLLECTION</h4>
+      </div>
+      <div class="modal-body">
+        <div class="popup_collection_right">
+          <p>Diamonds of exceptional quality and superior beauty. <br />
+            These diamonds:</p>
+          <ul class="popup_point">
+            <li>represent the finest 3% of diamond quality</li>
+            <li>are colorless with no visible inclusions</li>
+            <li>maximize fire and brilliance</li>
+          </ul>
+          <p><a href="javascript:void(0)" onclick="javascript:refreshpage('/loose-diamonds/search/?collections=Glacier')" style="text-decoration:underline;">Browse Collection</a></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="yosemite" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">YOSEMITE COLLECTION</h4>
+      </div>
+      <div class="modal-body">
+        <div class="popup_collection_right">
+          <p><br />
+            These diamonds:</p>
+          <ul class="popup_point">
+            <li>are in the top 15% of world diamond quality</li>
+            <li>balance size with fire, brilliance, and quality</li>
+            <li>have very good dimensions and proportions</li>
+          </ul>
+          <p><a href="javascript:void(0)" onclick="javascript:refreshpage('/loose-diamonds/search/?collections=Yosemite')" style="text-decoration:underline;">Browse Collection</a></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="ratio" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">L-W RATIO</h4>
+      </div>
+      <div class="modal-body">
+        <p> Length-to-Width Ratio –The length-to-width ratio compares the length of a diamond to its width to show how elongated a fancy-shaped diamond appears when viewed from the top. Length-to-width ratio is a matter of personal preference with some individuals preferring a more elongated shape and others a more equal or square shape. The most popular length-to-width ratios for fancy shapes are below.</p>
+        <p> Ex. A princess-cut diamond that measures 5.05 mm long by 5.00mm has a length-to-width ratio of 1.01 (5.05/5.00), and will appear perfectly square.</p>
+        <p> Most popular length-to-width ratios:<br />
+          Princess: 1.00-1.05<br />
+          Radiant: 1.00-1.05<br />
+          Asscher: 1.00-1.05<br />
+          Cushion: 1.00-1.05<br />
+          Heart: 0.90-1.10<br />
+          Emerald: 1.30-1.40<br />
+          Oval: 1.30-1.70<br />
+          Pear: 1.45-1.75<br />
+          Marquise: 1.75-2.30<br />
+        </p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="origin-certification" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CERTIFICATION</h4>
+      </div>
+      <div class="modal-body">
+        <div class="h4 mb15">Certification of Diamond Origin</div>
+        <p>All JewelryDemo.com diamonds come with a certificate guaranteeing the conflict free origin of the diamond. Our diamonds are tracked throughout their chain of custody to ensure that they are mined, cut, and polished in areas not tainted by war. This ensures that the diamonds are certified for their pure origin and are not corrupted by illicit or conflict diamonds. All of our diamonds are also verified to be produced with environmentally responsible methods using ethical labor practices.</p>
+        <p>While other retailers may claim that they do not carry conflict diamonds, very few have auditing processes to guarantee the ethical source of their diamonds. JewelryDemo.com provides a diamond origin certification and can track our diamonds back to their source. </p>
+        <p><a href="/conflict-diamond-facts/">Learn more about Conflict Diamond Issues.</a></p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="bank_wire" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">BANK WIRE</h4>
+      </div>
+      <div class="modal-body">
+        <p>You may use a bank wire to pay for JewelryDemo.com purchases of $500 or more. For US, Canadian, and Australian bank wires only, JewelryDemo.com provides a 1.5% discount to your order. For Canadian, Australian, and other international bank wires, a $35 processing fee will apply to your order. Some financial institutions may also charge a fee for using a bank wire.</p>
+        <p>After you submit your order, JewelryDemo.com will give you the account information you will need to provide to your bank to transfer funds from your account directly to a JewelryDemo.com account. It may take a few days for your bank to process the bank wire. Once your bank has transferred the funds, JewelryDemo.com is immediately notified and your purchase is processed. If you have any questions about the process involved in a bank wire, contact your bank or call JewelryDemo.com at 800-691-0952.</p>
+        <p>Please note an ACH transfer is not the same as a wire transfer. At this time, JewelryDemo.com does not accept ACH transfers. </p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="chain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CHAIN LENGTH</h4>
+      </div>
+      <div class="modal-body">
+        <p>The length of the chain will determine where the necklace will fall, whether choker length, at or below the collarbone, or at the neckline. We measure the length from the beginning of one end, to the end of the other, including the clasp (which may add an additional .75 inches). Different lengths are worn for different occasions and different outfits. The most common length is the 18" length, which typically falls at the collarbone.
+          
+          
+          
+          16": Choker length. Accentuates her neckline.
+          
+          18": At collarbone. Classic length.
+          
+          20": A few inches below collarbone.
+          
+          22": At or above neckline. For more dramatic, stylish look. </p>
+        <p align="center"> <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/neck.jpg" /> </p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="dimensions-centerstone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Dimensions of Center Stone</h4>
+      </div>
+      <div class="modal-body">
+        <p>The dimensions of the gemstone are the length and width of a gemstone as it appears from the top view. Dimensions represent the size of the gemstone more accurately than carat weight.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="gemstone-color" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Gemstone Color</h4>
+      </div>
+      <div class="modal-body">
+        <p>Color is used to describe the color present within a gemstone. Color is described in terms of tone and hue. JewelryDemo.com carefully selects gemstones with even color distributed throughout the gemstone.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="gemstone-clarity" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Gemstone Clarity</h4>
+      </div>
+      <div class="modal-body">
+        <p>Clarity is used to describe the presence of impurities on and within the gemstone. If the clarity of gemstones is specified as "eye clean", no visible impurities or flaws will be seen with the unaided eye. If the gemstone is "moderately included," there may be moderate flaws that are visible upon examination.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="gemstone-cert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Certification Of Gemstone Origin</h4>
+      </div>
+      <div class="modal-body">
+        <p>All JewelryDemo.com gemstones come with a certificate guaranteeing the fair trade origin of the gemstone.</p>
+        <p>At JewelryDemo.com we ensure that every gemstone we offer has been handled according to strict labor, trade, and environmental protocols. We track our gemstones from the moment they are mined to their final delivery to our valued customers, in order to provide genuine, high-quality fair trade gems. By holding our suppliers to a high ethical standard we hope to better the lives of those negatively affected by the mining and trade of gemstones, and to create a viable framework for industry accountability that will benefit the global community.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="chain-length" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style='padding-top: 80px;'>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">CHAIN LENGTH</h4>
+      </div>
+      <div class="modal-body">
+        <p>The length of the chain will determine where the necklace will fall, whether choker length, at or below the collarbone, or at the neckline. We measure the length from the beginning of one end, to the end of the other, including the clasp (which may add an additional .75 inches). Different lengths are worn for different occasions and different outfits. The most common length is the 18" length, which typically falls at the collarbone.
+          
+          
+          
+          16": Choker length. Accentuates her neckline.
+          
+          18": At collarbone. Classic length.
+          
+          20": A few inches below collarbone.
+          
+          22": At or above neckline. For more dramatic, stylish look. </p>
+        <p align="center"> <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/neck.jpg" /> </p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<div class="modal fade modal-type2" id="tax" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close more-information" data-dismiss="modal" aria-hidden="true">close <i class="icons-close-green"></i></button>
+        <h4 class="modal-title" id="myModalLabel">Tax</h4>
+      </div>
+      <div class="modal-body">
+        <p>For US orders, JewelryDemo.com currently only collects sales tax on orders shipped to addresses in California State. For orders shipped to Canada, JewelryDemo.com collects the relevant GST/PST/HST based on the province that the order is being shipped to. For Canadian orders, there are no additional duties. For orders over $1,000 AUD shipped to Australia, JewelryDemo.com collects the 10% GST tax.</p>
+      </div>
+    </div>
+    
+    <!-- /.modal-content --> 
+    
+  </div>
+  
+  <!-- /.modal-dialog --> 
+  
+</div>
+<script type="text/javascript">
+
+  function refreshpage(url){
+
+    window.location.href= url;
+
+  }
+
+</script> 
+
+<!-- SITE BODY END -->
+
+<div class="standar h700" style="display:none;z-index:3008;border-width:2px;position:absolute;width:auto;height:auto;top:100px;left:230px;" id="refer_form">
+  <div style="display:none;" id="loading_refer" class="loading_preview"> <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_SKIN);?>frontend/base/default/image/ajax-loading.gif" width="66" height="66" /> </div>
+  <div id="loading_content"></div>
+</div>
+<script type="text/javascript">
+
+// handle the modals popup on mobile & tablet
+
+  if("ontouchstart" in document) {
+
+    jQuery("body").append("<style type='text/css'>/* for mobile move bug */.modal-open{overflow:auto;}.modal{position:absolute;top:0;bottom:0;overflow:visible;}body.modal-open{margin-right:0;}</style> ")
+
+    jQuery(".modal-backdrop").on('click', function() {
+
+      jQuery(".modal.fade.in").modal('hide');
+
+    });
+
+  }
+
+</script> 

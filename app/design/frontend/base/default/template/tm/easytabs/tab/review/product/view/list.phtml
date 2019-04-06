@@ -1,0 +1,7 @@
+<?php echo $this->getLayout()
+    ->createBlock('review/product_view_list')
+    ->setTemplate('review/product/view/list.phtml')
+    ->toHtml();
+?>
+
+<?php echo $this->getChildHtml('review_form') ?>

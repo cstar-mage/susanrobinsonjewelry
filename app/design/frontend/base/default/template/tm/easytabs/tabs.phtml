@@ -1,0 +1,50 @@
+<?php
+    $tabs = array();
+    foreach ($this->getTabs() as $_index => $_tab) {
+        if (!($childHtml = $this->getChildHtml($_tab['alias']))
+            || $this->isEmptyString($childHtml)) {
+
+            continue;
+        }
+        $_tab['child_html'] = $childHtml;
+
+        $tabs[$_index] = $_tab;
+    }
+?>
+<div class="easytabs-wrapper" id="<?php echo $this->getHtmlId();?>" <?php echo $this->getUpdateUrlHash() ? 'data-track-hash' : ''; ?> <?php echo $this->getInitiallyCollapsed() ? 'data-collapsed' : ''; ?>>
+    <div class="easytabs-ul-wrapper">
+        <ul class="easytabs">
+            <?php foreach ($tabs as $_index => $_tab) : ?>
+                <li>
+                    <h2 class="tab-title" >
+                        <?php if ($this->getUpdateUrlHash() == 1) : ?>
+                            <a href="#product_tabs_<?php echo $_tab['alias'] ?>" class="easytabs-anchor easytabs-a easytabs-a-tab">
+                                <?php echo $this->getTabTitle($_tab); ?>
+                            </a>
+                        <?php else : ?>
+                            <span data-href="#product_tabs_<?php echo $_tab['alias'] ?>" class="easytabs-anchor easytabs-a easytabs-a-tab">
+                                <?php if ($this->getShowAnchor()) : ?>
+                                    <a href="#product_tabs_<?php echo $_tab['alias'] ?>" class="easytabs-anchor-icon">#</a>
+                                <?php endif ?>
+                                <?php echo $this->getTabTitle($_tab); ?>
+                            </span>
+                        <?php endif ?>
+                    </h2>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <div class="padder easytabs-content-wrapper">
+    <?php foreach ($tabs as $_index => $_tab) : ?>
+        <span data-href="#product_tabs_<?php echo $_tab['alias'] ?>" class="easytabs-anchor easytabs-a easytabs-a-accordion">
+            <?php echo $this->getTabTitle($_tab);?>
+        </span>
+        <div class="easytabs-content"
+            id="product_tabs_<?php echo $_tab['alias'] ?>_contents"
+            data-tab-alias="<?php echo $_tab['alias'] ?>"
+            style="display:none">
+            <?php echo $_tab['child_html']; ?>
+        </div>
+    <?php endforeach; ?>
+    </div>
+</div>
